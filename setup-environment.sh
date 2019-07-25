@@ -23,6 +23,8 @@ fi
 
 if [ ! -f $WORKSHOP_DIR/settings.sh ]; then
     warn "Cannot find any workshop settings."
+else
+    . $WORKSHOP_DIR/settings.sh
 fi
 
 echo "### Setting defaults for spawner application."
