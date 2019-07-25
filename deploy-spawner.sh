@@ -38,13 +38,13 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo "### Install global definitions."
+echo "### Install static resource definitions."
 
 if [ -d $WORKSHOP_DIR/resources/ ]; then
     oc apply -f $WORKSHOP_DIR/resources/ --recursive
 
     if [ "$?" != "0" ]; then
-        fail "Failed to create global definitions."
+        fail "Failed to create static resource definitions."
         exit 1
     fi
 fi
