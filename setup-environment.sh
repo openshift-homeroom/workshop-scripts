@@ -2,13 +2,13 @@
 
 fail()
 {
-    echo "Error: " $* 1>&2
+    echo "Error:" $* 1>&2
     exit 1
 }
 
 warn()
 {
-    echo "Warning: " $* 1>&2
+    echo "Warning:" $* 1>&2
 }
 
 echo "### Reading the workshop configuation."
