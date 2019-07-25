@@ -4,6 +4,10 @@ SCRIPTS_DIR=`dirname $0`
 
 . $SCRIPTS_DIR/setup-environment.sh
 
+TEMPLATE_REPO=https://raw.githubusercontent.com/$SPAWNER_REPO
+TEMPLATE_FILE=$SPAWNER_MODE-$SPAWNER_VARIANT.json
+TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
+
 echo "### Creating spawner application."
 
 oc process -f $TEMPLATE_PATH \

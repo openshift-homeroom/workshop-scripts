@@ -10,9 +10,9 @@ APPLICATION_LABELS="app=$SPAWNER_APPLICATION-$SPAWNER_NAMESPACE,spawner=$SPAWNER
 
 PROJECT_RESOURCES="services,routes,deploymentconfigs,imagestreams,secrets,configmaps,serviceaccounts,rolebindings,serviceaccounts,rolebindings,persistentvolumeclaims,pods"
 
-echo "### Delete global resources."
-
 oc delete "$PROJECT_RESOURCES" --selector "$APPLICATION_LABELS"
+
+echo "### Delete global resources."
 
 CLUSTER_RESOURCES="clusterrolebindings,clusterroles"
 
