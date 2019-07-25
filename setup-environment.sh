@@ -15,10 +15,10 @@ echo
 echo "### Reading the workshop configuation."
 echo
 
-SCRIPT_DIR=`dirname $0`
-WORKSHOP_DIR=`basename $SCRIPT_DIR`
+SCRIPTS_DIR=`dirname $0`
+WORKSHOP_DIR=`dirname $SCRIPTS_DIR`
 
-if [ x"$WORKSHOP_DIR" != x".workshop" ]; then
+if [ `basename $WORKSHOP_DIR` != ".workshop" ]; then
     fail "Failed to find workshop directory."
     exit 1
 fi
