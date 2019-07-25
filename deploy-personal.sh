@@ -27,7 +27,7 @@ oc process -f $TEMPLATE_PATH \
     --param GATEWAY_ENVVARS="$GATEWAY_ENVVARS" \
     --param TERMINAL_ENVVARS="$TERMINAL_ENVVARS" \
     --param WORKSHOP_ENVVARS="$WORKSHOP_ENVVARS" \
-    --param CONSOLE_VERSION="$CONSOLE_VERSION"
+    --param CONSOLE_VERSION="$CONSOLE_VERSION" | oc apply -f -
 
 if [ "$?" != "0" ]; then
     fail "Failed to create deployment for dashboard."
