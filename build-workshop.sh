@@ -30,11 +30,15 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo "### Updating spawner to use image for local workshop content."
+oc get is ${SPAWNER_APPLICATION}-app -o name 2>/dev/null
 
-oc tag "$WORKSHOP_NAME:latest" "${SPAWNER_APPLICATION}-app:latest"
+if [ "$?" == "0" ]; then
+    echo "### Updating spawner to use image for local workshop content."
 
-if [ "$?" != "0" ]; then
-    fail "Failed to update spawner to use image for local workshop."
-    exit 1
+    oc tag "$WORKSHOP_NAME:latest" "${SPAWNER_APPLICATION}-app:latest"
+
+    if [ "$?" != "0" ]; then
+        fail "Failed to update spawner to use image for local workshop."
+        exit 1
+    fi
 fi
