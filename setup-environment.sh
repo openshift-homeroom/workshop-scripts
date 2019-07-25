@@ -35,6 +35,11 @@ SPAWNER_MODE=${SPAWNER_MODE:-learning-portal}
 SPAWNER_VARIANT=${SPAWNER_VARIANT:-production}
 SPAWNER_NAMESPACE=`oc project --short 2>/dev/null`
 
+if [ x"$SPAWNER_NAMESPACE" == x"" ]; then
+    fail "Cannot determine name of project."
+    exit 1
+fi
+
 WORKSHOP_NAME=${WORKSHOP_NAME:-$SPAWNER_MODE}
 WORKSHOP_IMAGE=${WORKSHOP_IMAGE:-quay.io/openshiftlabs/workshop-dashboard:3.6.2}
 
@@ -47,10 +52,14 @@ TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 RESOURCE_BUDGET=${RESOURCE_BUDGET:-medium}
 MAX_SESSION_AGE=${MAX_SESSION_AGE:-3600}
 IDLE_TIMEOUT=${IDLE_TIMEOUT:-300}
-CONSOLE_VERSION=${CONSOLE_VERSION:-4.2.0}
 LETS_ENCRYPT=${LETS_ENCRYPT:-false}
 
-if [ x"$SPAWNER_NAMESPACE" == x"" ]; then
-    fail "Cannot determine name of project."
-    exit 1
+VERSION_INFO=`oc get --raw /version 2>/dev/null`
+
+if [ x"$CONSOLE_VERSION" == x"" ]; then
+    if [ `echo $VERSION_INFO | grep '"minor": "13+"'` ]; then
+        CONSOLE_VERSION=4.1
+    fi
 fi
+
+CONSOLE_VERSION=${CONSOLE_VERSION:-4.1}
