@@ -12,7 +12,7 @@ echo "### Creating spawner application."
 
 oc process -f $TEMPLATE_PATH \
     --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
-    --param PROJECT_NAME="$SPAWNER_NAMESPACE" \
+    --param PROJECT_NAME="$PROJECT_NAME" \
     --param RESOURCE_BUDGET="$RESOURCE_BUDGET" \
     --param HOMEROOM_LINK="$HOMEROOM_LINK" \
     --param GATEWAY_ENVVARS="$GATEWAY_ENVVARS" \
@@ -54,7 +54,7 @@ echo "### Update spawner configuration for workshop."
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$SPAWNER_NAMESPACE" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update session rules for workshop."
@@ -65,7 +65,7 @@ fi
 if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$SPAWNER_NAMESPACE" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update spawner rules for workshop."
@@ -76,7 +76,7 @@ fi
 if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$SPAWNER_NAMESPACE" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update extra resources for workshop."

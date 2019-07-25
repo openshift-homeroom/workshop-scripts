@@ -6,7 +6,7 @@ SCRIPTS_DIR=`dirname $0`
 
 echo "### Delete project resources."
 
-APPLICATION_LABELS="app=$SPAWNER_APPLICATION-$SPAWNER_NAMESPACE,spawner=$SPAWNER_MODE"
+APPLICATION_LABELS="app=$SPAWNER_APPLICATION-$PROJECT_NAME,spawner=$SPAWNER_MODE"
 
 PROJECT_RESOURCES="services,routes,deploymentconfigs,imagestreams,secrets,configmaps,serviceaccounts,rolebindings,serviceaccounts,rolebindings,persistentvolumeclaims,pods"
 

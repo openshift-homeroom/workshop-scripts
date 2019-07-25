@@ -51,9 +51,9 @@ fi
 
 CONSOLE_VERSION=${CONSOLE_VERSION:-4.1}
 
-SPAWNER_NAMESPACE=`oc project --short 2>/dev/null`
+PROJECT_NAME=`oc project --short 2>/dev/null`
 
-if [ x"$SPAWNER_NAMESPACE" == x"" ]; then
+if [ x"$PROJECT_NAME" == x"" ]; then
     fail "Cannot determine name of project."
     exit 1
 fi
