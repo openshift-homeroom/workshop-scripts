@@ -29,15 +29,16 @@ fi
 
 echo "### Setting defaults for spawner application."
 
-WORKSHOP_NAME=${WORKSHOP_NAME:-$SPAWNER_MODE}
-WORKSHOP_IMAGE=${WORKSHOP_IMAGE:-quay.io/openshiftlabs/workshop-dashboard:3.6.2}
-
 SPAWNER_REPO=${SPAWNER_REPO:-openshift-labs/workshop-spawner}
 SPAWNER_VERSION=${SPAWNER_VERSION:-4.3.0}
 SPAWNER_MODE=${SPAWNER_MODE:-learning-portal}
 SPAWNER_VARIANT=${SPAWNER_VARIANT:-production}
-SPAWNER_APPLICATION=${SPAWNER_APPLICATION:-$WORKSHOP_NAME}
 SPAWNER_NAMESPACE=`oc project --short 2>/dev/null`
+
+WORKSHOP_NAME=${WORKSHOP_NAME:-$SPAWNER_MODE}
+WORKSHOP_IMAGE=${WORKSHOP_IMAGE:-quay.io/openshiftlabs/workshop-dashboard:3.6.2}
+
+SPAWNER_APPLICATION=${SPAWNER_APPLICATION:-$WORKSHOP_NAME}
 
 TEMPLATE_REPO=https://raw.githubusercontent.com/$SPAWNER_REPO
 TEMPLATE_FILE=$SPAWNER_MODE-$SPAWNER_VARIANT.json
