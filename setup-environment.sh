@@ -30,7 +30,7 @@ else
     . $WORKSHOP_DIR/settings.sh
 fi
 
-echo "### Setting defaults for spawner application."
+echo "### Setting the workshop application."
 
 WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 
@@ -42,7 +42,7 @@ SPAWNER_VERSION=${SPAWNER_VERSION:-4.3.0}
 SPAWNER_MODE=${SPAWNER_MODE:-learning-portal}
 SPAWNER_VARIANT=${SPAWNER_VARIANT:-production}
 
-DASHBOARD_REPO=${SPAWNER_REPO:-openshift-labs/workshop-dashboard}
+DASHBOARD_REPO=${DASHBOARD_REPO:-openshift-labs/workshop-dashboard}
 DASHBOARD_VERSION=3.6.2
 DASHBOARD_IMAGE=quay.io/openshiftlabs/workshop-dashboard:$DASHBOARD_VERSION
 DASHBOARD_VARIANT=${DASHBOARD_VARIANT:-production}
