@@ -5,7 +5,13 @@ SCRIPTS_DIR=`dirname $0`
 . $SCRIPTS_DIR/setup-environment.sh
 
 TEMPLATE_REPO=https://raw.githubusercontent.com/$DASHBOARD_REPO
+
 TEMPLATE_FILE=$DASHBOARD_VARIANT.json
+
+if [ x"$DASHBOARD_MODE" != x"" ]; then
+    TEMPLATE_FILE=$DASHBOARD_VARIANT-$DASHBOARD_MODE.json
+fi
+
 TEMPLATE_PATH=$TEMPLATE_REPO/$DASHBOARD_VERSION/templates/$TEMPLATE_FILE
 
 echo "### Install static resource definitions."
