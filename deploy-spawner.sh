@@ -4,9 +4,7 @@ SCRIPTS_DIR=`dirname $0`
 
 . $SCRIPTS_DIR/setup-environment.sh
 
-echo
 echo "### Creating spawner application."
-echo
 
 oc process -f $TEMPLATE_PATH \
     --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
@@ -27,9 +25,7 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo
 echo "### Waiting for the spawner to deploy."
-echo
 
 oc rollout status dc/"$SPAWNER_APPLICATION"
 
@@ -38,9 +34,7 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo
 echo "### Install global definitions."
-echo
 
 if [ -d $WORKSHOP_DIR/resources/ ]; then
     oc apply -f $WORKSHOP_DIR/resources/ --recursive
@@ -51,9 +45,7 @@ if [ -d $WORKSHOP_DIR/resources/ ]; then
     fi
 fi
 
-echo
 echo "### Update spawner configuration for workshop."
-echo
 
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
@@ -88,9 +80,7 @@ if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
     fi
 fi
 
-echo
 echo "### Restart the spawner with new configuration."
-echo
 
 oc rollout latest dc/"$SPAWNER_APPLICATION"
 
@@ -106,9 +96,7 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo
 echo "### Updating spawner to use image for workshop."
-echo
 
 oc tag "$WORKSHOP_IMAGE" "${SPAWNER_APPLICATION}-app:latest"
 
@@ -117,8 +105,6 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo
 echo "### Route details for the spawner are as follows."
-echo
 
 oc get route "${SPAWNER_APPLICATION}"

@@ -11,9 +11,7 @@ warn()
     echo "Warning: " $* 1>&2
 }
 
-echo
 echo "### Reading the workshop configuation."
-echo
 
 SCRIPTS_DIR=`dirname $0`
 WORKSHOP_DIR=`dirname $SCRIPTS_DIR`
@@ -27,11 +25,7 @@ if [ ! -f $WORKSHOP_DIR/settings.sh ]; then
     warn "Cannot find any workshop settings."
 fi
 
-. $WORKSHOP_DIR/settings.sh
-
-echo
 echo "### Setting defaults for spawner application."
-echo
 
 SPAWNER_REPO=${SPAWNER_REPO:-openshift-labs/workshop-spawner}
 SPAWNER_VERSION=${SPAWNER_VERSION:-4.3.0}
