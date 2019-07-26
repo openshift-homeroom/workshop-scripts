@@ -36,6 +36,8 @@ echo "### Reading the default configuation."
 
 . $SCRIPTS_DIR/default-settings.sh
 
+DEFAULT_WORKSHOP_IMAGE=$WORKSHOP_IMAGE
+
 echo "### Reading the workshop configuation."
 
 if [ ! -f $WORKSHOP_DIR/settings.sh ]; then
@@ -44,16 +46,16 @@ else
     . $WORKSHOP_DIR/settings.sh
 fi
 
+if [ x"$WORKSHOP_IMAGE" == x"" ]; then
+    WORKSHOP_IMAGE=$DEFAULT_WORKSHOP_IMAGE
+fi
+
 echo "### Setting the workshop application."
 
 WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 
 SPAWNER_APPLICATION=${SPAWNER_APPLICATION:-$WORKSHOP_NAME}
 DASHBOARD_APPLICATION=${DASHBOARD_APPLICATION:-$WORKSHOP_NAME}
-
-if [ x"$WORKSHOP_IMAGE" == x"" ]; then
-    WORKSHOP_IMAGE=quay.io/openshiftlabs/workshop-dashboard:master
-fi
 
 VERSION_INFO=`oc get --raw /version 2>/dev/null`
 
