@@ -10,7 +10,7 @@ TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 
 echo "### Checking spawner configuration."
 
-if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
+if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
     if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
         read -p "CLUSTER_SUBDOMAIN: " CLUSTER_SUBDOMAIN
 
