@@ -59,7 +59,7 @@ if [ x"$SPAWNER_MODE" == x"terminal-server" ]; then
 fi
 
 if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
-    # ...
+    true
 fi
 
 oc process -f $TEMPLATE_PATH $TEMPLATE_ARGS | oc apply -f -
