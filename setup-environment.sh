@@ -51,19 +51,19 @@ if [ x"$WORKSHOP_IMAGE" == x"" ]; then
 fi
 
 if [ -f "$WORKSHOP_DIR/jupyterhub_config.py" ]; then
-    JUPYTERHUB_CONFIG=$(< $WORKSHOP_DIR/jupyterhub_config.py)
+    JUPYTERHUB_CONFIG=`cat $WORKSHOP_DIR/jupyterhub_config.py`
 fi
 
 if [ -f "$WORKSHOP_DIR/terminal.sh" ]; then
-    TERMINAL_ENVVARS=$(< $WORKSHOP_DIR/terminal.sh)
+    TERMINAL_ENVVARS=`cat $WORKSHOP_DIR/terminal.sh`
 fi
 
 if [ -f "$WORKSHOP_DIR/workshop.sh" ]; then
-    WORKSHOP_ENVVARS=$(< $WORKSHOP_DIR/workshop.sh)
+    WORKSHOP_ENVVARS=`cat $WORKSHOP_DIR/workshop.sh`
 fi
 
 if [ -f "$WORKSHOP_DIR/gateway.sh" ]; then
-    GATEWAY_ENVVARS=$(< $WORKSHOP_DIR/gateway.sh)
+    GATEWAY_ENVVARS=`cat $WORKSHOP_DIR/gateway.sh`
 fi
 
 echo "### Setting the workshop application."
