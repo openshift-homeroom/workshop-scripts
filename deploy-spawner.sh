@@ -8,21 +8,48 @@ TEMPLATE_REPO=https://raw.githubusercontent.com/$SPAWNER_REPO
 TEMPLATE_FILE=$SPAWNER_MODE-$SPAWNER_VARIANT.json
 TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 
+echo "### Checking spawner configuration."
+
+if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
+    if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
+        read -p "CLUSTER_SUBDOMAIN: " CLUSTER_SUBDOMAIN
+
+        CLUSTER_SUBDOMAIN=$(trim $CLUSTER_SUBDOMAIN)
+
+        if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
+            fail "Must provide valid CLUSTER_SUBDOMAIN."
+        fi
+    fi
+fi
+
 echo "### Creating spawner application."
 
-oc process -f $TEMPLATE_PATH \
-    --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
-    --param PROJECT_NAME="$SPAWNER_NAMESPACE" \
-    --param RESOURCE_BUDGET="$RESOURCE_BUDGET" \
-    --param HOMEROOM_LINK="$HOMEROOM_LINK" \
-    --param GATEWAY_ENVVARS="$GATEWAY_ENVVARS" \
-    --param TERMINAL_ENVVARS="$TERMINAL_ENVVARS" \
-    --param WORKSHOP_ENVVARS="$WORKSHOP_ENVVARS" \
-    --param CONSOLE_VERSION="$CONSOLE_VERSION" \
-    --param IDLE_TIMEOUT="$IDLE_TIMEOUT" \
-    --param MAX_SESSION_AGE="$MAX_SESSION_AGE" \
-    --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
-    --param LETS_ENCRYPT="$LETS_ENCRYPT" | oc apply -f -
+TEMPLATE_ARGS=""
+
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param PROJECT_NAME=$PROJECT_NAME"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param APPLICATION_NAME=$SPAWNER_APPLICATION"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param GATEWAY_ENVVARS=$GATEWAY_ENVVARS"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param TERMINAL_ENVVARS=$TERMINAL_ENVVARS"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param WORKSHOP_ENVVARS=$WORKSHOP_ENVVARS"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param CONSOLE_VERSION=$CONSOLE_VERSION"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param IDLE_TIMEOUT=$IDLE_TIMEOUT"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param JUPYTERHUB_CONFIG=$JUPYTERHUB_CONFIG"
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param LETS_ENCRYPT=$LETS_ENCRYPT"
+
+if [[ "$SPAWNER_MODE" =~ ^(learning-portal|user-workspace)$ ]]; then
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param RESOURCE_BUDGET=$RESOURCE_BUDGET"
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param HOMEROOM_LINK=$HOMEROOM_LINK"
+fi
+
+if [[ "$SPAWNER_MODE" =~ ^(learning-portal)$ ]]; then
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param MAX_SESSION_AGE=$MAX_SESSION_AGE"
+fi
+
+if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param CLUSTER_SUBDOMAIN=$CLUSTER_SUBDOMAIN"
+fi
+
+oc process -f $TEMPLATE_PATH $TEMPLATE_ARGS | oc apply -f -
 
 if [ "$?" != "0" ]; then
     fail "Failed to create deployment for spawner."
@@ -54,7 +81,7 @@ echo "### Update spawner configuration for workshop."
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$SPAWNER_NAMESPACE" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update session rules for workshop."
@@ -65,7 +92,7 @@ fi
 if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$SPAWNER_NAMESPACE" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update spawner rules for workshop."
@@ -76,7 +103,7 @@ fi
 if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
     oc process -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$SPAWNER_NAMESPACE" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update extra resources for workshop."

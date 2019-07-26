@@ -9,6 +9,18 @@ warn()
     echo "Warning:" $* 1>&2
 }
 
+trim()
+{
+    local trimmed="$1"
+
+    # Strip leading space.
+    trimmed="${trimmed## }"
+    # Strip trailing space.
+    trimmed="${trimmed%% }"
+
+    echo "$trimmed"
+}
+
 SCRIPTS_DIR=`dirname $0`
 WORKSHOP_DIR=`dirname $SCRIPTS_DIR`
 SOURCE_DIR=`dirname $WORKSHOP_DIR`
@@ -24,6 +36,8 @@ echo "### Reading the default configuation."
 
 . $SCRIPTS_DIR/default-settings.sh
 
+DEFAULT_WORKSHOP_IMAGE=$WORKSHOP_IMAGE
+
 echo "### Reading the workshop configuation."
 
 if [ ! -f $WORKSHOP_DIR/settings.sh ]; then
@@ -32,14 +46,16 @@ else
     . $WORKSHOP_DIR/settings.sh
 fi
 
+if [ x"$WORKSHOP_IMAGE" == x"" ]; then
+    WORKSHOP_IMAGE=$DEFAULT_WORKSHOP_IMAGE
+fi
+
 echo "### Setting the workshop application."
 
 WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 
 SPAWNER_APPLICATION=${SPAWNER_APPLICATION:-$WORKSHOP_NAME}
 DASHBOARD_APPLICATION=${DASHBOARD_APPLICATION:-$WORKSHOP_NAME}
-
-WORKSHOP_IMAGE=${WORKSHOP_IMAGE:-$DASHBOARD_IMAGE}
 
 VERSION_INFO=`oc get --raw /version 2>/dev/null`
 
@@ -51,9 +67,9 @@ fi
 
 CONSOLE_VERSION=${CONSOLE_VERSION:-4.1}
 
-SPAWNER_NAMESPACE=`oc project --short 2>/dev/null`
+PROJECT_NAME=`oc project --short 2>/dev/null`
 
-if [ x"$SPAWNER_NAMESPACE" == x"" ]; then
+if [ x"$PROJECT_NAME" == x"" ]; then
     fail "Cannot determine name of project."
     exit 1
 fi
