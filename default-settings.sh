@@ -1,4 +1,4 @@
-DASHBOARD_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.6.2
+WORKSHOP_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.6.2
 
 SPAWNER_REPO=openshift-labs/workshop-spawner
 SPAWNER_VERSION=4.3.0
