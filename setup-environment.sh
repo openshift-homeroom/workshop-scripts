@@ -9,6 +9,18 @@ warn()
     echo "Warning:" $* 1>&2
 }
 
+trim()
+{
+    local trimmed="$1"
+
+    # Strip leading space.
+    trimmed="${trimmed## }"
+    # Strip trailing space.
+    trimmed="${trimmed%% }"
+
+    echo "$trimmed"
+}
+
 SCRIPTS_DIR=`dirname $0`
 WORKSHOP_DIR=`dirname $SCRIPTS_DIR`
 SOURCE_DIR=`dirname $WORKSHOP_DIR`
