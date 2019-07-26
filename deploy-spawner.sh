@@ -36,13 +36,16 @@ TEMPLATE_ARGS="$TEMPLATE_ARGS --param IDLE_TIMEOUT=$IDLE_TIMEOUT"
 TEMPLATE_ARGS="$TEMPLATE_ARGS --param JUPYTERHUB_CONFIG=$JUPYTERHUB_CONFIG"
 TEMPLATE_ARGS="$TEMPLATE_ARGS --param LETS_ENCRYPT=$LETS_ENCRYPT"
 
-if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
+if [[ "$SPAWNER_MODE" =~ ^(learning-portal|user-workspace)$ ]]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param RESOURCE_BUDGET=$RESOURCE_BUDGET"
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param HOMEROOM_LINK=$HOMEROOM_LINK"
+fi
+
+if [[ "$SPAWNER_MODE" =~ ^(learning-portal)$ ]]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param MAX_SESSION_AGE=$MAX_SESSION_AGE"
 fi
 
-if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
+if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param CLUSTER_SUBDOMAIN=$CLUSTER_SUBDOMAIN"
 fi
 
