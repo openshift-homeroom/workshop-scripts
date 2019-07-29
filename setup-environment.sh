@@ -36,8 +36,6 @@ echo "### Reading the default configuation."
 
 . $SCRIPTS_DIR/default-settings.sh
 
-DEFAULT_WORKSHOP_IMAGE=$WORKSHOP_IMAGE
-
 echo "### Reading the workshop configuation."
 
 if [ ! -f $WORKSHOP_DIR/settings.sh ]; then
@@ -47,7 +45,7 @@ else
 fi
 
 if [ x"$WORKSHOP_IMAGE" == x"" ]; then
-    WORKSHOP_IMAGE=$DEFAULT_WORKSHOP_IMAGE
+    WORKSHOP_IMAGE=$DASHBOARD_IMAGE
 fi
 
 if [ -f "$WORKSHOP_DIR/jupyterhub_config.py" ]; then
