@@ -185,7 +185,7 @@ fi
 
 echo "### Updating spawner to use image for workshop."
 
-oc tag "$WORKSHOP_IMAGE" "${SPAWNER_APPLICATION}-app:latest"
+oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest"
 
 if [ "$?" != "0" ]; then
     fail "Failed to update spawner to use workshop image."

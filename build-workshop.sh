@@ -29,16 +29,3 @@ if [ "$?" != "0" ]; then
     fail "Failed to build workshop content."
     exit 1
 fi
-
-oc get is ${SPAWNER_APPLICATION}-app -o name 2>/dev/null
-
-if [ "$?" == "0" ]; then
-    echo "### Updating spawner to use image for local workshop content."
-
-    oc tag "$WORKSHOP_NAME:latest" "${SPAWNER_APPLICATION}-app:latest"
-
-    if [ "$?" != "0" ]; then
-        fail "Failed to update spawner to use image for local workshop."
-        exit 1
-    fi
-fi
