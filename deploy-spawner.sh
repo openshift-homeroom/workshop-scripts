@@ -2,6 +2,20 @@
 
 SCRIPTS_DIR=`dirname $0`
 
+echo "### Parsing command line arguments."
+
+for i in "$@"
+do
+    case $i in
+        --event=*)
+            EVENT_NAME="${i#*=}"
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
+
 . $SCRIPTS_DIR/setup-environment.sh
 
 TEMPLATE_REPO=https://raw.githubusercontent.com/$SPAWNER_REPO
@@ -11,6 +25,34 @@ TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 echo "### Checking spawner configuration."
 
 if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
+    if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
+        oc create route edge $WORKSHOP_NAME-dummy \
+            --service dummy --port 8080 > /dev/null 2>&1
+
+        if [ "$?" != "0" ]; then
+            fail "Cannot create dummy route $WORKSHOP_NAME-dummy."
+        fi
+
+        DUMMY_FQDN=`oc get route/$WORKSHOP_NAME-dummy -o template --template {{.spec.host}}`
+
+        if [ "$?" != "0" ]; then
+            fail "Cannot determine host from dummy route."
+        fi
+
+        DUMMY_HOST=$WORKSHOP_NAME-dummy-$PROJECT_NAME
+        CLUSTER_SUBDOMAIN=`echo $DUMMY_FQDN | sed -e "s/^$DUMMY_HOST.//"`
+
+        if [ x"$CLUSTER_SUBDOMAIN" == x"$DUMMY_FQDN" ]; then
+            CLUSTER_SUBDOMAIN=""
+        fi
+
+        oc delete route $WORKSHOP_NAME-dummy > /dev/null 2>&1
+
+        if [ "$?" != "0" ]; then
+            warn "Cannot delete dummy route."
+        fi
+    fi
+
     if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
         read -p "CLUSTER_SUBDOMAIN: " CLUSTER_SUBDOMAIN
 
@@ -30,6 +72,7 @@ if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param RESOURCE_BUDGET=$RESOURCE_BUDGET"
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param HOMEROOM_LINK=$HOMEROOM_LINK"
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param CONSOLE_VERSION=$CONSOLE_VERSION"
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param SERVER_LIMIT=$SERVER_LIMIT"
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param MAX_SESSION_AGE=$MAX_SESSION_AGE"
 fi
 
@@ -142,7 +185,7 @@ fi
 
 echo "### Updating spawner to use image for workshop."
 
-oc tag "$WORKSHOP_IMAGE" "${SPAWNER_APPLICATION}-app:latest"
+oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest"
 
 if [ "$?" != "0" ]; then
     fail "Failed to update spawner to use workshop image."
