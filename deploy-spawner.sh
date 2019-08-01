@@ -2,13 +2,7 @@
 
 SCRIPTS_DIR=`dirname $0`
 
-. $SCRIPTS_DIR/setup-environment.sh
-
-TEMPLATE_REPO=https://raw.githubusercontent.com/$SPAWNER_REPO
-TEMPLATE_FILE=$SPAWNER_MODE-$SPAWNER_VARIANT.json
-TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
-
-echo "### Paring command line arguments."
+echo "### Parsing command line arguments."
 
 for i in "$@"
 do
@@ -17,18 +11,16 @@ do
             EVENT_NAME="${i#*=}"
             shift
             ;;
-        --cluster-subdomain=*)
-            CLUSTER_SUBDOMAIN="${i#*=}"
-            shift
-            ;;
-        --server-limit=*)
-            SERVER_LIMIT="${i#*=}"
-            shift
-            ;;
         *)
             ;;
     esac
 done
+
+. $SCRIPTS_DIR/setup-environment.sh
+
+TEMPLATE_REPO=https://raw.githubusercontent.com/$SPAWNER_REPO
+TEMPLATE_FILE=$SPAWNER_MODE-$SPAWNER_VARIANT.json
+TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 
 echo "### Checking spawner configuration."
 
