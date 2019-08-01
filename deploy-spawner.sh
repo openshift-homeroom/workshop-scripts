@@ -40,7 +40,7 @@ if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
         fi
 
         DUMMY_HOST=$WORKSHOP_NAME-dummy-$PROJECT_NAME
-        CLUSTER_SUBDOMAIN=${$DUMMY_HOST//$DUMMY_FQDN}
+        CLUSTER_SUBDOMAIN=`echo $DUMMY_FQDN | sed -e "s/^$DUMMY_HOST.//"`
 
         if [ x"$CLUSTER_SUBDOMAIN" == x"$DUMMY_FQDN" ]; then
             CLUSTER_SUBDOMAIN=""
