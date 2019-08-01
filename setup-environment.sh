@@ -81,24 +81,6 @@ WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 SPAWNER_APPLICATION=${SPAWNER_APPLICATION:-$WORKSHOP_NAME}
 DASHBOARD_APPLICATION=${DASHBOARD_APPLICATION:-$WORKSHOP_NAME}
 
-VERSION_INFO=`oc get --raw /version 2>/dev/null`
-VERSION_TAG=`echo "$VERSION_INFO" | grep '"minor":' | sed -e 's/.*: "//' -e 's/".*//'`
-
-if [ x"$CONSOLE_VERSION" == x"" ]; then
-    case "$VERSION_TAG" in
-        12|12+)
-            CONSOLE_VERSION=4.0
-            ;;
-        13|13+)
-            CONSOLE_VERSION=4.1
-            ;;
-        *)
-            ;;
-    esac
-fi
-
-CONSOLE_VERSION=${CONSOLE_VERSION:-4.1}
-
 PROJECT_NAME=`oc project --short 2>/dev/null`
 
 if [ x"$PROJECT_NAME" == x"" ]; then
