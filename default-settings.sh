@@ -1,6 +1,7 @@
 TERMINAL_IMAGE=quay.io/openshiftlabs/workshop-terminal:2.11.3
 DASHBOARD_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.7.0
 SPAWNER_IMAGE=quay.io/openshiftlabs/workshop-spawner:4.3.0
+CONSOLE_IMAGE=quay.io/openshift/origin-console:4.1
 
 SPAWNER_REPO=openshift-labs/workshop-spawner
 SPAWNER_VERSION=4.3.0
