@@ -12,7 +12,7 @@ echo "### Paring command line arguments."
 
 for i in "$@"
 do
-    case $i in)
+    case $i in
         --event=*)
             EVENT_NAME="${i#*=}"
             shift
