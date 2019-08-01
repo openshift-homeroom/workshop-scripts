@@ -27,10 +27,10 @@ echo "### Checking spawner configuration."
 if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
     if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
         oc create route edge $WORKSHOP_NAME-dummy \
-            --service dummy --port 8080
+            --service dummy --port 8080 > /dev/null 2>&1
 
         if [ "$?" != "0" ]; then
-            fail "Cannot create a dummy route."
+            fail "Cannot create dummy route $WORKSHOP_NAME-dummy."
         fi
 
         DUMMY_FQDN=`oc get route/$WORKSHOP_NAME-dummy -o template --template {{.spec.host}}`
@@ -46,7 +46,7 @@ if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
             CLUSTER_SUBDOMAIN=""
         fi
 
-        oc delete route $WORKSHOP_NAME-dummy
+        oc delete route $WORKSHOP_NAME-dummy > /dev/null 2>&1
 
         if [ "$?" != "0" ]; then
             warn "Cannot delete dummy route."
