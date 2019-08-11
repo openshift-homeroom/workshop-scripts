@@ -8,6 +8,7 @@ SPAWNER_VERSION=4.4.3
 SPAWNER_MODE=learning-portal
 SPAWNER_VARIANT=production
 SPAWNER_ROLE=basic-user
+SPAWNER_PASSWORD=
 
 DASHBOARD_REPO=openshift-labs/workshop-dashboard
 DASHBOARD_VERSION=3.7.1
