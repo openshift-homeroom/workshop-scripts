@@ -46,9 +46,7 @@ fi
 
 if [ x"$SETTINGS_NAME" != x"" ]; then
     if [ ! -f $WORKSHOP_DIR/$SETTINGS_NAME-settings.sh ]; then
-        if [ x"$SETTINGS_NAME" != x"event" ]; then
-            warn "Cannot find any event settings."
-        fi
+        warn "Cannot find any custom workshop settings."
     else
         . $WORKSHOP_DIR/$SETTINGS_NAME-settings.sh
     fi
