@@ -44,14 +44,14 @@ else
     . $WORKSHOP_DIR/settings.sh
 fi
 
-EVENT_NAME=${EVENT_NAME:-event}
-
-if [ ! -f $WORKSHOP_DIR/$EVENT_NAME-settings.sh ]; then
-    if [ x"$EVENT_NAME" != x"event" ]; then
-        warn "Cannot find any event settings."
+if [ x"$SETTINGS_NAME" != x"" ]; then
+    if [ ! -f $WORKSHOP_DIR/$SETTINGS_NAME-settings.sh ]; then
+        if [ x"$SETTINGS_NAME" != x"event" ]; then
+            warn "Cannot find any event settings."
+        fi
+    else
+        . $WORKSHOP_DIR/$SETTINGS_NAME-settings.sh
     fi
-else
-    . $WORKSHOP_DIR/$EVENT_NAME-settings.sh
 fi
 
 if [ x"$WORKSHOP_IMAGE" == x"" ]; then

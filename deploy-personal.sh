@@ -2,6 +2,21 @@
 
 SCRIPTS_DIR=`dirname $0`
 
+echo "### Parsing command line arguments."
+
+for i in "$@"
+do
+    case $i in
+        # Keep --event for backwards compatibility.
+        --event=*|--settings=*)
+            SETTINGS_NAME="${i#*=}"
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
+
 . $SCRIPTS_DIR/setup-environment.sh
 
 TEMPLATE_REPO=https://raw.githubusercontent.com/$DASHBOARD_REPO
