@@ -2,6 +2,21 @@
 
 SCRIPTS_DIR=`dirname $0`
 
+echo "### Parsing command line arguments."
+
+for i in "$@"
+do
+    case $i in
+        # Keep --event for backwards compatibility.
+        --event=*|--settings=*)
+            SETTINGS_NAME="${i#*=}"
+            shift
+            ;;
+        *)
+            ;;
+    esac
+done
+
 . $SCRIPTS_DIR/setup-environment.sh
 
 TEMPLATE_REPO=https://raw.githubusercontent.com/$DASHBOARD_REPO
@@ -35,6 +50,12 @@ TEMPLATE_ARGS="$TEMPLATE_ARGS --param GATEWAY_ENVVARS=$GATEWAY_ENVVARS"
 TEMPLATE_ARGS="$TEMPLATE_ARGS --param TERMINAL_ENVVARS=$TERMINAL_ENVVARS"
 TEMPLATE_ARGS="$TEMPLATE_ARGS --param WORKSHOP_ENVVARS=$WORKSHOP_ENVVARS"
 TEMPLATE_ARGS="$TEMPLATE_ARGS --param CONSOLE_IMAGE=$CONSOLE_IMAGE"
+
+TEMPLATE_ARGS="$TEMPLATE_ARGS --param AUTH_USERNAME=$AUTH_USERNAME"
+
+if [ x"$AUTH_USERNAME" != x"" ]; then
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param AUTH_PASSWORD=$AUTH_PASSWORD"
+fi
 
 if [ x"$DASHBOARD_MODE" == x"cluster-admin" ]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param PROJECT_NAME=$PROJECT_NAME"

@@ -7,8 +7,9 @@ echo "### Parsing command line arguments."
 for i in "$@"
 do
     case $i in
-        --event=*)
-            EVENT_NAME="${i#*=}"
+        # Keep --event for backwards compatibility.
+        --event=*|--settings=*)
+            SETTINGS_NAME="${i#*=}"
             shift
             ;;
         *)
