@@ -32,11 +32,11 @@ if [ `basename $WORKSHOP_DIR` != ".workshop" ]; then
     exit 1
 fi
 
-echo "### Reading the default configuation."
+echo "### Reading the default configuration."
 
 . $SCRIPTS_DIR/default-settings.sh
 
-echo "### Reading the workshop configuation."
+echo "### Reading the workshop configuration."
 
 if [ ! -f $WORKSHOP_DIR/settings.sh ]; then
     warn "Cannot find any workshop settings."
