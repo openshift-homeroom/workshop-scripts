@@ -31,7 +31,7 @@ docker pull "$CONSOLE_IMAGE" > /dev/null 2>&1 &
 echo "### Create persistent volumes."
 
 for i in $(seq -f "%02g" 1 10); do
-    mkdir /data/pv-$i
+    mkdir -p /data/pv-$i
 done
 
 chmod 0777 /data/pv-*
