@@ -66,6 +66,7 @@ fi
 
 if [ x"$DASHBOARD_MODE" == x"cluster-admin" ]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param PROJECT_NAME=$PROJECT_NAME"
+    TEMPLATE_ARGS="$TEMPLATE_ARGS --param OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT"
 fi
 
 oc process -f $TEMPLATE_PATH $TEMPLATE_ARGS | oc apply -f -
