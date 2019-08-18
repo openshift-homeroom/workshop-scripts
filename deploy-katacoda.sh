@@ -23,8 +23,8 @@ done
 
 echo "### Start pulling down workshop and console images."
 
-docker pull -q "$WORKSHOP_IMAGE" &
-docker pull -q "$CONSOLE_IMAGE" &
+docker pull "$WORKSHOP_IMAGE" > /dev/null 2>&1 &
+docker pull "$CONSOLE_IMAGE" > /dev/null 2>&1 &
 
 # Now create the volumes. Create a fixed number for now.
 
