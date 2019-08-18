@@ -1,5 +1,5 @@
 TERMINAL_IMAGE=quay.io/openshiftlabs/workshop-terminal:2.12.2
-DASHBOARD_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.7.1
+DASHBOARD_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.7.3
 SPAWNER_IMAGE=quay.io/openshiftlabs/workshop-spawner:4.4.3
 CONSOLE_IMAGE=quay.io/openshift/origin-console:4.1
 
@@ -11,7 +11,7 @@ SPAWNER_ROLE=basic-user
 SPAWNER_PASSWORD=
 
 DASHBOARD_REPO=openshift-labs/workshop-dashboard
-DASHBOARD_VERSION=3.7.1
+DASHBOARD_VERSION=3.7.3
 DASHBOARD_MODE=
 DASHBOARD_VARIANT=production
 
