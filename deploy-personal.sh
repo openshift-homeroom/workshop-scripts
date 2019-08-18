@@ -96,4 +96,5 @@ fi
 
 echo "### Route details for the dashboard are as follows."
 
-oc get route "${DASHBOARD_APPLICATION}"
+oc get route "${DASHBOARD_APPLICATION}" -o template \
+    --template '{{.spec.host}}{{"\n"}}'
