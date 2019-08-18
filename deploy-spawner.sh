@@ -200,4 +200,5 @@ fi
 
 echo "### Route details for the spawner are as follows."
 
-oc get route "${SPAWNER_APPLICATION}"
+oc get route "${SPAWNER_APPLICATION}" -o template \
+    --template '{{.spec.host}}{{"\n"}}'
