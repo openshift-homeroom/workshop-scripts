@@ -1,10 +1,10 @@
 TERMINAL_IMAGE=quay.io/openshifthomeroom/workshop-terminal:3.0.0
 DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:4.0.0
-SPAWNER_IMAGE=quay.io/openshiftlabs/workshop-spawner:4.4.3
+SPAWNER_IMAGE=quay.io/openshifthomeroom/workshop-spawner:5.0.0
 CONSOLE_IMAGE=quay.io/openshift/origin-console:4.1
 
-SPAWNER_REPO=openshift-labs/workshop-spawner
-SPAWNER_VERSION=4.4.3
+SPAWNER_REPO=openshift-homeroom/workshop-spawner
+SPAWNER_VERSION=5.0.0
 SPAWNER_MODE=learning-portal
 SPAWNER_VARIANT=production
 SPAWNER_ROLE=basic-user
