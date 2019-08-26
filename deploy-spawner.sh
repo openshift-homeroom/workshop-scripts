@@ -12,6 +12,10 @@ do
             SETTINGS_NAME="${i#*=}"
             shift
             ;;
+        --project=*)
+            PROJECT_NAME="${i#*=}"
+            shift
+            ;;
         *)
             ;;
     esac
@@ -27,14 +31,14 @@ echo "### Checking spawner configuration."
 
 if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
     if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
-        oc create route edge $WORKSHOP_NAME-dummy \
+        oc create route edge -n "$PROJECT_NAME" $WORKSHOP_NAME-dummy \
             --service dummy --port 8080 > /dev/null 2>&1
 
         if [ "$?" != "0" ]; then
             fail "Cannot create dummy route $WORKSHOP_NAME-dummy."
         fi
 
-        DUMMY_FQDN=`oc get route/$WORKSHOP_NAME-dummy -o template --template {{.spec.host}}`
+        DUMMY_FQDN=`oc get route/$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" -o template --template {{.spec.host}}`
 
         if [ "$?" != "0" ]; then
             fail "Cannot determine host from dummy route."
@@ -47,7 +51,7 @@ if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
             CLUSTER_SUBDOMAIN=""
         fi
 
-        oc delete route $WORKSHOP_NAME-dummy > /dev/null 2>&1
+        oc delete route $WORKSHOP_NAME-dummy -n "$PROJECT_NAME" > /dev/null 2>&1
 
         if [ "$?" != "0" ]; then
             warn "Cannot delete dummy route."
@@ -99,7 +103,7 @@ if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
     true
 fi
 
-oc process -f $TEMPLATE_PATH \
+oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
     --param PROJECT_NAME=$PROJECT_NAME \
     --param APPLICATION_NAME=$SPAWNER_APPLICATION \
     --param DOWNLOAD_URL=$DOWNLOAD_URL \
@@ -111,7 +115,7 @@ oc process -f $TEMPLATE_PATH \
     --param IDLE_TIMEOUT=$IDLE_TIMEOUT \
     --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
     --param LETS_ENCRYPT=$LETS_ENCRYPT \
-    $TEMPLATE_ARGS | oc apply -f -
+    $TEMPLATE_ARGS | oc apply -n "$PROJECT_NAME" -f -
 
 if [ "$?" != "0" ]; then
     fail "Failed to create deployment for spawner."
@@ -120,7 +124,7 @@ fi
 
 echo "### Waiting for the spawner to deploy."
 
-oc rollout status dc/"$SPAWNER_APPLICATION"
+oc rollout status dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -130,7 +134,7 @@ fi
 echo "### Install static resource definitions."
 
 if [ -d $WORKSHOP_DIR/resources/ ]; then
-    oc apply -f $WORKSHOP_DIR/resources/ --recursive
+    oc apply -n "$PROJECT_NAME" -f $WORKSHOP_DIR/resources/ --recursive
 
     if [ "$?" != "0" ]; then
         fail "Failed to create static resource definitions."
@@ -141,9 +145,11 @@ fi
 echo "### Update spawner configuration for workshop."
 
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
-    oc process -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
+    oc process -n "$PROJECT_NAME" \
+        -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update session rules for workshop."
@@ -152,9 +158,11 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
 fi
 
 if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
-    oc process -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
+    oc process -n "$PROJECT_NAME" \
+        -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update spawner rules for workshop."
@@ -163,9 +171,11 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
 fi
 
 if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
-    oc process -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
+    oc process -n "$PROJECT_NAME" \
+        -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | oc apply -f -
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update extra resources for workshop."
@@ -175,14 +185,14 @@ fi
 
 echo "### Restart the spawner with new configuration."
 
-oc rollout latest dc/"$SPAWNER_APPLICATION"
+oc rollout latest dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Failed to restart the spawner."
     exit 1
 fi
 
-oc rollout status dc/"$SPAWNER_APPLICATION"
+oc rollout status dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -191,7 +201,7 @@ fi
 
 echo "### Updating spawner to use image for workshop."
 
-oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest"
+oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Failed to update spawner to use workshop image."
@@ -200,5 +210,5 @@ fi
 
 echo "### Route details for the spawner are as follows."
 
-oc get route "${SPAWNER_APPLICATION}" -o template \
-    --template '{{.spec.host}}{{"\n"}}'
+oc get route "${SPAWNER_APPLICATION}" -n "$PROJECT_NAME" \
+    -o template --template '{{.spec.host}}{{"\n"}}'

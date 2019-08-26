@@ -12,6 +12,10 @@ do
             SETTINGS_NAME="${i#*=}"
             shift
             ;;
+        --project=*)
+            PROJECT_NAME="${i#*=}"
+            shift
+            ;;
         *)
             ;;
     esac
@@ -32,7 +36,7 @@ TEMPLATE_PATH=$TEMPLATE_REPO/$DASHBOARD_VERSION/templates/$TEMPLATE_FILE
 echo "### Install static resource definitions."
 
 if [ -d $WORKSHOP_DIR/resources/ ]; then
-    oc apply -f $WORKSHOP_DIR/resources/ --recursive
+    oc apply -n "$PROJECT_NAME" -f $WORKSHOP_DIR/resources/ --recursive
 
     if [ "$?" != "0" ]; then
         fail "Failed to create static resource definitions."
@@ -72,7 +76,8 @@ if [ x"$DASHBOARD_MODE" == x"cluster-admin" ]; then
     TEMPLATE_ARGS="$TEMPLATE_ARGS --param OPENSHIFT_PROJECT=$OPENSHIFT_PROJECT"
 fi
 
-oc process -f $TEMPLATE_PATH $TEMPLATE_ARGS | oc apply -f -
+oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH $TEMPLATE_ARGS | \
+    oc apply -n "$PROJECT_NAME" -f -
 
 if [ "$?" != "0" ]; then
     fail "Failed to create deployment for dashboard."
@@ -81,7 +86,7 @@ fi
 
 echo "### Waiting for the dashboard to deploy."
 
-oc rollout status dc/"$DASHBOARD_APPLICATION"
+oc rollout status dc/"$DASHBOARD_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of dashboard failed to complete."
@@ -90,7 +95,7 @@ fi
 
 echo "### Waiting for the dashboard to deploy."
 
-oc rollout status dc/"$DASHBOARD_APPLICATION"
+oc rollout status dc/"$DASHBOARD_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of dashboard failed to complete."
@@ -99,5 +104,5 @@ fi
 
 echo "### Route details for the dashboard are as follows."
 
-oc get route "${DASHBOARD_APPLICATION}" -o template \
-    --template '{{.spec.host}}{{"\n"}}'
+oc get route "${DASHBOARD_APPLICATION}" -n "$PROJECT_NAME" \
+    -o template --template '{{.spec.host}}{{"\n"}}'

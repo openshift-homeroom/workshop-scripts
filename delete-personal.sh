@@ -11,6 +11,10 @@ do
             SETTINGS_NAME="${i#*=}"
             shift
             ;;
+        --project=*)
+            PROJECT_NAME="${i#*=}"
+            shift
+            ;;
         *)
             ;;
     esac
@@ -24,4 +28,4 @@ APPLICATION_LABELS="app=$DASHBOARD_APPLICATION"
 
 PROJECT_RESOURCES="all,serviceaccount,rolebinding,configmap"
 
-oc delete "$PROJECT_RESOURCES" --selector "$APPLICATION_LABELS"
+oc delete "$PROJECT_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABELS"
