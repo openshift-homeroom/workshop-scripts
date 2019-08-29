@@ -2,19 +2,7 @@
 
 SCRIPTS_DIR=`dirname $0`
 
-echo "### Parsing command line arguments."
-
-for i in "$@"
-do
-    case $i in
-        --event=*|--settings=*)
-            SETTINGS_NAME="${i#*=}"
-            shift
-            ;;
-        *)
-            ;;
-    esac
-done
+. $SCRIPTS_DIR/parse-arguments.sh
 
 . $SCRIPTS_DIR/setup-environment.sh
 
@@ -24,10 +12,10 @@ APPLICATION_LABELS="app=$SPAWNER_APPLICATION-$PROJECT_NAME,spawner=$SPAWNER_MODE
 
 PROJECT_RESOURCES="services,routes,deploymentconfigs,imagestreams,secrets,configmaps,serviceaccounts,rolebindings,serviceaccounts,rolebindings,persistentvolumeclaims,pods"
 
-oc delete "$PROJECT_RESOURCES" --selector "$APPLICATION_LABELS"
+oc delete "$PROJECT_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABELS"
 
 echo "### Delete global resources."
 
 CLUSTER_RESOURCES="clusterrolebindings,clusterroles"
 
-oc delete "$CLUSTER_RESOURCES" --selector "$APPLICATION_LABELS"
+oc delete "$CLUSTER_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABELS"

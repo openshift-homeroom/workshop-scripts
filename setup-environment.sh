@@ -52,6 +52,22 @@ if [ x"$SETTINGS_NAME" != x"" ]; then
     fi
 fi
 
+for key in "${overrides[@]}"; do
+    case $key in
+        @*)
+            file="${key#*@}"
+            if [ -f "$file" ]; then
+                . $file
+            fi
+            ;;
+        *)
+            mapped_key="override_${key}"
+            value="${!mapped_key}"
+            declare ${key}="${value}"
+            ;;
+    esac
+done
+
 if [ x"$WORKSHOP_IMAGE" == x"" ]; then
     WORKSHOP_IMAGE=$DASHBOARD_IMAGE
 fi
@@ -79,9 +95,18 @@ WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 SPAWNER_APPLICATION=${SPAWNER_APPLICATION:-$WORKSHOP_NAME}
 DASHBOARD_APPLICATION=${DASHBOARD_APPLICATION:-$WORKSHOP_NAME}
 
-PROJECT_NAME=`oc project --short 2>/dev/null`
+if [ x"$PROJECT_NAME" == x"" ]; then
+    PROJECT_NAME=`oc project --short 2>/dev/null`
+fi
 
 if [ x"$PROJECT_NAME" == x"" ]; then
     fail "Cannot determine name of project."
+    exit 1
+fi
+
+oc get project "$PROJECT_NAME" > /dev/null 2>&1
+
+if [ "$?" != "0" ]; then
+    fail "Project $PROJECT_NAME does not exist."
     exit 1
 fi
