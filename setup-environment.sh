@@ -52,6 +52,22 @@ if [ x"$SETTINGS_NAME" != x"" ]; then
     fi
 fi
 
+for key in "${overrides[@]}"; do
+    case $key in
+        @*)
+            file="${key#*@}"
+            if [ -f "$file" ]; then
+                . $file
+            fi
+            ;;
+        *)
+            mapped_key="override_${key}"
+            value="${!mapped_key}"
+            declare ${key}="${value}"
+            ;;
+    esac
+done
+
 if [ x"$WORKSHOP_IMAGE" == x"" ]; then
     WORKSHOP_IMAGE=$DASHBOARD_IMAGE
 fi
