@@ -2,23 +2,7 @@
 
 SCRIPTS_DIR=`dirname $0`
 
-echo "### Parsing command line arguments."
-
-for i in "$@"
-do
-    case $i in
-        --event=*|--settings=*)
-            SETTINGS_NAME="${i#*=}"
-            shift
-            ;;
-        --project=*)
-            PROJECT_NAME="${i#*=}"
-            shift
-            ;;
-        *)
-            ;;
-    esac
-done
+. $SCRIPTS_DIR/parse-arguments.sh
 
 . $SCRIPTS_DIR/setup-environment.sh
 
