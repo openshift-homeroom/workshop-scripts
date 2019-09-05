@@ -76,6 +76,10 @@ if [ -f "$WORKSHOP_DIR/jupyterhub_config.py" ]; then
     JUPYTERHUB_CONFIG=`cat $WORKSHOP_DIR/jupyterhub_config.py`
 fi
 
+if [ -f "$WORKSHOP_DIR/jupyterhub_config.sh" ]; then
+    JUPYTERHUB_ENVVARS=`cat $WORKSHOP_DIR/jupyterhub_config.sh`
+fi
+
 if [ -f "$WORKSHOP_DIR/terminal.sh" ]; then
     TERMINAL_ENVVARS=`cat $WORKSHOP_DIR/terminal.sh`
 fi
