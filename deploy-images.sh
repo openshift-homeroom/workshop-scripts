@@ -23,6 +23,12 @@ spec:
         app: $WORKSHOP_NAME-cache
     spec:
       initContainers:
+      - name: prepull-spawner 
+        image: $SPAWNER_IMAGE
+        command: ["/bin/true"]
+      - name: prepull-terminal 
+        image: $TERMINAL_IMAGE
+        command: ["/bin/true"]
       - name: prepull-workshop 
         image: $WORKSHOP_IMAGE
         command: ["/bin/true"]
