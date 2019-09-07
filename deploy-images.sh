@@ -8,7 +8,7 @@ SCRIPTS_DIR=`dirname $0`
 
 echo "### Deploy daemon set to pre-pull images."
 
-cat << EOF | oc apply -f
+cat << EOF | oc apply -f -
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
