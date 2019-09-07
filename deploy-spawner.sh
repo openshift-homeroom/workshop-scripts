@@ -168,6 +168,15 @@ if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
     fi
 fi
 
+echo "### Updating spawner to use image for workshop."
+
+oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest" -n "$PROJECT_NAME"
+
+if [ "$?" != "0" ]; then
+    fail "Failed to update spawner to use workshop image."
+    exit 1
+fi
+
 echo "### Restart the spawner with new configuration."
 
 oc rollout latest dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
@@ -177,19 +186,12 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
+echo "### Waiting for the spawner to deploy again."
+
 oc rollout status dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
-    exit 1
-fi
-
-echo "### Updating spawner to use image for workshop."
-
-oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest" -n "$PROJECT_NAME"
-
-if [ "$?" != "0" ]; then
-    fail "Failed to update spawner to use workshop image."
     exit 1
 fi
 
