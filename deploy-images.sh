@@ -12,15 +12,15 @@ cat << EOF | oc apply -f -
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: $WORKSHOP_NAME-images
+  name: $WORKSHOP_NAME-cache
 spec:
   selector:
     matchLabels:
-      app: $WORKSHOP_NAME-images
+      app: $WORKSHOP_NAME-cache
   template:
     metadata:
       labels:
-        app: $WORKSHOP_NAME-images
+        app: $WORKSHOP_NAME-cache
     spec:
       initContainers:
       - name: prepull-workshop 
