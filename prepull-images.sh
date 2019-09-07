@@ -12,15 +12,15 @@ cat << EOF | oc apply -n "$PROJECT_NAME" -f -
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: $WORKSHOP_NAME-cache
+  name: $WORKSHOP_NAME-prepull
 spec:
   selector:
     matchLabels:
-      app: $WORKSHOP_NAME-cache
+      app: $WORKSHOP_NAME-prepull
   template:
     metadata:
       labels:
-        app: $WORKSHOP_NAME-cache
+        app: $WORKSHOP_NAME-prepull
     spec:
       initContainers:
       - name: prepull-spawner 

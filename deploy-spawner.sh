@@ -59,15 +59,15 @@ if [ x"$PREPULL_IMAGES" == x"true" ]; then
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: $WORKSHOP_NAME-cache
+  name: $WORKSHOP_NAME-prepull
 spec:
   selector:
     matchLabels:
-      app: $WORKSHOP_NAME-cache
+      app: $WORKSHOP_NAME-prepull
   template:
     metadata:
       labels:
-        app: $WORKSHOP_NAME-cache
+        app: $WORKSHOP_NAME-prepull
     spec:
       initContainers:
       - name: prepull-spawner 

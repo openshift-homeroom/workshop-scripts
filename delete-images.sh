@@ -8,4 +8,4 @@ SCRIPTS_DIR=`dirname $0`
 
 echo "### Delete daemon set for pre-pulling images."
 
-oc delete daemonset/$WORKSHOP_NAME-cache -n "$PROJECT_NAME"
+oc delete daemonset/$WORKSHOP_NAME-prepull -n "$PROJECT_NAME"

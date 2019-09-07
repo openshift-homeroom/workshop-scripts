@@ -23,5 +23,5 @@ oc delete "$CLUSTER_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABEL
 if [ x"$PREPULL_IMAGES" == x"true" ]; then
     echo "### Delete daemon set for pre-pulling images."
 
-    oc delete daemonset/$WORKSHOP_NAME-cache -n "$PROJECT_NAME"
+    oc delete daemonset/$WORKSHOP_NAME-prepull -n "$PROJECT_NAME"
 fi
