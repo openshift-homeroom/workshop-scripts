@@ -52,6 +52,69 @@ if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
     fi
 fi
 
+if [ x"$PREPULL_IMAGES" == x"true" ]; then
+    echo "### Deploy daemon set to pre-pull images."
+
+    cat << EOF | oc apply -n "$PROJECT_NAME" -f -
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: $WORKSHOP_NAME-prepull
+spec:
+  selector:
+    matchLabels:
+      app: $WORKSHOP_NAME-prepull
+  template:
+    metadata:
+      labels:
+        app: $WORKSHOP_NAME-prepull
+    spec:
+      initContainers:
+      - name: prepull-spawner 
+        image: $SPAWNER_IMAGE
+        command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+      - name: prepull-terminal 
+        image: $TERMINAL_IMAGE
+        command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
+      - name: prepull-workshop 
+        image: $WORKSHOP_IMAGE
+        command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
+      - name: prepull-console
+        image: $CONSOLE_IMAGE
+        command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
+      containers:
+      - name: pause
+        image: gcr.io/google_containers/pause
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
+EOF
+
+    if [ "$?" != "0" ]; then
+        warn "Creation of daemonset to pre-pull images failed."
+    fi
+fi
+
 echo "### Creating spawner application."
 
 TEMPLATE_ARGS=""
@@ -89,6 +152,7 @@ fi
 oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
     --param PROJECT_NAME=$PROJECT_NAME \
     --param APPLICATION_NAME=$SPAWNER_APPLICATION \
+    --param SPAWNER_IMAGE=$SPAWNER_IMAGE \
     --param DOWNLOAD_URL=$DOWNLOAD_URL \
     --param WORKSHOP_FILE=$WORKSHOP_FILE \
     --param WORKSHOP_MEMORY=$WORKSHOP_MEMORY \
@@ -97,6 +161,7 @@ oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
     --param WORKSHOP_ENVVARS="$WORKSHOP_ENVVARS" \
     --param IDLE_TIMEOUT=$IDLE_TIMEOUT \
     --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
+    --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
     --param LETS_ENCRYPT=$LETS_ENCRYPT \
     $TEMPLATE_ARGS | oc apply -n "$PROJECT_NAME" -f -
 
@@ -166,6 +231,15 @@ if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
     fi
 fi
 
+echo "### Updating spawner to use image for workshop."
+
+oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest" -n "$PROJECT_NAME"
+
+if [ "$?" != "0" ]; then
+    fail "Failed to update spawner to use workshop image."
+    exit 1
+fi
+
 echo "### Restart the spawner with new configuration."
 
 oc rollout latest dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
@@ -175,19 +249,12 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
+echo "### Waiting for the spawner to deploy again."
+
 oc rollout status dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
-    exit 1
-fi
-
-echo "### Updating spawner to use image for workshop."
-
-oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest" -n "$PROJECT_NAME"
-
-if [ "$?" != "0" ]; then
-    fail "Failed to update spawner to use workshop image."
     exit 1
 fi
 

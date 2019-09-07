@@ -19,3 +19,9 @@ echo "### Delete global resources."
 CLUSTER_RESOURCES="clusterrolebindings,clusterroles"
 
 oc delete "$CLUSTER_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABELS"
+
+if [ x"$PREPULL_IMAGES" == x"true" ]; then
+    echo "### Delete daemon set for pre-pulling images."
+
+    oc delete daemonset/$WORKSHOP_NAME-prepull -n "$PROJECT_NAME"
+fi
