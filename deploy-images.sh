@@ -26,18 +26,41 @@ spec:
       - name: prepull-spawner 
         image: $SPAWNER_IMAGE
         command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
       - name: prepull-terminal 
         image: $TERMINAL_IMAGE
         command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
       - name: prepull-workshop 
         image: $WORKSHOP_IMAGE
         command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
       - name: prepull-console
         image: $CONSOLE_IMAGE
         command: ["/bin/true"]
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
       containers:
       - name: pause
         image: gcr.io/google_containers/pause
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            memory: 128Mi
 EOF
 
 if [ "$?" != "0" ]; then
