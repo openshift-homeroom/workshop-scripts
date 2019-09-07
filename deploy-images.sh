@@ -39,3 +39,8 @@ spec:
       - name: pause
         image: gcr.io/google_containers/pause
 EOF
+
+if [ "$?" != "0" ]; then
+    fail "Creation of daemonset to pre-pull images failed."
+    exit 1
+fi
