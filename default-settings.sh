@@ -3,6 +3,10 @@ DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:4.1.0
 SPAWNER_IMAGE=quay.io/openshifthomeroom/workshop-spawner:6.1.0
 CONSOLE_IMAGE=quay.io/openshift/origin-console:4.1
 
+HOMEROOM_NAME=homeroom
+WORKSHOP_TITLE=
+WORKSHOP_DESCRIPTION=
+
 SPAWNER_REPO=openshift-homeroom/workshop-spawner
 SPAWNER_VERSION=6.1.0
 SPAWNER_MODE=learning-portal
