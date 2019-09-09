@@ -174,6 +174,7 @@ if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
+        --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
         --param WORKSHOP_DESCRIPTION="$WORKSHOP_DESCRIPTION" \
         --param SPAWNER_IMAGE="$SPAWNER_IMAGE" \
@@ -197,6 +198,7 @@ if [ x"$SPAWNER_MODE" == x"terminal-server" ]; then
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
+        --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
         --param WORKSHOP_DESCRIPTION="$WORKSHOP_DESCRIPTION" \
         --param SPAWNER_IMAGE="$SPAWNER_IMAGE" \
