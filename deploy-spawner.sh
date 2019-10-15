@@ -282,6 +282,19 @@ if [ -d $WORKSHOP_DIR/resources/ ]; then
     fi
 fi
 
+if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
+    oc process \
+        -f $WORKSHOP_DIR/templates/spawner-resources.yaml \
+        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        oc apply -f -
+
+    if [ "$?" != "0" ]; then
+        fail "Failed to update spawner resources definitions."
+        exit 1
+    fi
+fi
+
 echo "### Update spawner configuration for workshop."
 
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
