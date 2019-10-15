@@ -271,13 +271,26 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo "### Install static resource definitions."
+echo "### Install spawner resource definitions."
 
 if [ -d $WORKSHOP_DIR/resources/ ]; then
-    oc apply -n "$PROJECT_NAME" -f $WORKSHOP_DIR/resources/ --recursive
+    oc apply -f $WORKSHOP_DIR/resources/ --recursive
 
     if [ "$?" != "0" ]; then
-        fail "Failed to create static resource definitions."
+        fail "Failed to update static spawner resource definitions."
+        exit 1
+    fi
+fi
+
+if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
+    oc process \
+        -f $WORKSHOP_DIR/templates/spawner-resources.yaml \
+        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        oc apply -f -
+
+    if [ "$?" != "0" ]; then
+        fail "Failed to update spawner resources definitions."
         exit 1
     fi
 fi
@@ -310,16 +323,32 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
     fi
 fi
 
-if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
+if [ -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml ]; then
     oc process -n "$PROJECT_NAME" \
-        -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
+        -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
         oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
-        fail "Failed to update extra resources for workshop."
+        fail "Failed to update session resources for workshop."
         exit 1
+    fi
+else
+    # File configmap-extra-resources.yaml is old name and is now
+    # deprecated. Use configmap-session-resources.yaml instead.
+
+    if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
+        oc process -n "$PROJECT_NAME" \
+            -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
+            --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+            --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+            oc apply -n "$PROJECT_NAME" -f -
+
+        if [ "$?" != "0" ]; then
+            fail "Failed to update session resources for workshop."
+            exit 1
+        fi
     fi
 fi
 
