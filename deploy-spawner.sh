@@ -323,16 +323,32 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
     fi
 fi
 
-if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
+if [ -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml ]; then
     oc process -n "$PROJECT_NAME" \
-        -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
+        -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml \
         --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
         oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
-        fail "Failed to update extra resources for workshop."
+        fail "Failed to update session resources for workshop."
         exit 1
+    fi
+else
+    # File configmap-extra-resources.yaml is old name and is now
+    # deprecated. Use configmap-session-resources.yaml instead.
+
+    if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
+        oc process -n "$PROJECT_NAME" \
+            -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
+            --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+            --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+            oc apply -n "$PROJECT_NAME" -f -
+
+        if [ "$?" != "0" ]; then
+            fail "Failed to update session resources for workshop."
+            exit 1
+        fi
     fi
 fi
 
