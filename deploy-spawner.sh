@@ -271,13 +271,13 @@ if [ "$?" != "0" ]; then
     exit 1
 fi
 
-echo "### Install static resource definitions."
+echo "### Install spawner resource definitions."
 
 if [ -d $WORKSHOP_DIR/resources/ ]; then
-    oc apply -n "$PROJECT_NAME" -f $WORKSHOP_DIR/resources/ --recursive
+    oc apply -f $WORKSHOP_DIR/resources/ --recursive
 
     if [ "$?" != "0" ]; then
-        fail "Failed to create static resource definitions."
+        fail "Failed to update static spawner resource definitions."
         exit 1
     fi
 fi
