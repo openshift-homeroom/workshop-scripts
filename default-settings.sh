@@ -1,5 +1,5 @@
-TERMINAL_IMAGE=quay.io/openshifthomeroom/workshop-terminal:3.1.0
-DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:4.2.0
+TERMINAL_IMAGE=quay.io/openshifthomeroom/workshop-terminal:3.1.2
+DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:4.2.2
 SPAWNER_IMAGE=quay.io/openshifthomeroom/workshop-spawner:6.2.2
 CONSOLE_IMAGE=quay.io/openshift/origin-console:4.1
 
@@ -15,7 +15,7 @@ SPAWNER_ROLE=admin
 SPAWNER_PASSWORD=
 
 DASHBOARD_REPO=openshift-homeroom/workshop-dashboard
-DASHBOARD_VERSION=4.2.0
+DASHBOARD_VERSION=4.2.2
 DASHBOARD_MODE=
 DASHBOARD_VARIANT=production
 
