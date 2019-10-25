@@ -15,13 +15,13 @@ do
             SETTINGS_NAME="$1"
             shift
             ;;
-        --project=*)
-            PROJECT_NAME="${i#*=}"
+        --project=*|--namespace=*)
+            NAMESPACE="${i#*=}"
             shift
             ;;
-        --project)
+        --project|--namespace)
             shift
-            PROJECT_NAME="$1"
+            NAMESPACE="$1"
             shift
             ;;
         --override=@*)

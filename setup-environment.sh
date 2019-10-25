@@ -98,18 +98,18 @@ WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 
 DASHBOARD_APPLICATION=${DASHBOARD_APPLICATION:-$WORKSHOP_NAME}
 
-if [ x"$PROJECT_NAME" == x"" ]; then
-    PROJECT_NAME=`oc project --short 2>/dev/null`
+if [ x"$NAMESPACE" == x"" ]; then
+    NAMESPACE=`oc project --short 2>/dev/null`
 fi
 
-if [ x"$PROJECT_NAME" == x"" ]; then
+if [ x"$NAMESPACE" == x"" ]; then
     fail "Cannot determine name of project."
     exit 1
 fi
 
-oc get project "$PROJECT_NAME" > /dev/null 2>&1
+oc get project "$NAMESPACE" > /dev/null 2>&1
 
 if [ "$?" != "0" ]; then
-    fail "Project $PROJECT_NAME does not exist."
+    fail "Project $NAMESPACE does not exist."
     exit 1
 fi

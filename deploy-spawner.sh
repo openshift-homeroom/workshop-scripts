@@ -13,27 +13,27 @@ TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 echo "### Checking spawner configuration."
 
 if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
-    oc create route edge -n "$PROJECT_NAME" $NAME_PREFIX$WORKSHOP_NAME-dummy \
+    oc create route edge -n "$NAMESPACE" $NAME_PREFIX$WORKSHOP_NAME-dummy \
         --service dummy --port 8080 > /dev/null 2>&1
 
     if [ "$?" != "0" ]; then
         fail "Cannot create dummy route $NAME_PREFIX$WORKSHOP_NAME-dummy."
     fi
 
-    DUMMY_FQDN=`oc get route/$NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" -o template --template {{.spec.host}}`
+    DUMMY_FQDN=`oc get route/$NAME_PREFIX$WORKSHOP_NAME-dummy -n "$NAMESPACE" -o template --template {{.spec.host}}`
 
     if [ "$?" != "0" ]; then
         fail "Cannot determine host from dummy route."
     fi
 
-    DUMMY_HOST=$NAME_PREFIX$WORKSHOP_NAME-dummy-$PROJECT_NAME
+    DUMMY_HOST=$NAME_PREFIX$WORKSHOP_NAME-dummy-$NAMESPACE
     CLUSTER_SUBDOMAIN=`echo $DUMMY_FQDN | sed -e "s/^$DUMMY_HOST.//"`
 
     if [ x"$CLUSTER_SUBDOMAIN" == x"$DUMMY_FQDN" ]; then
         CLUSTER_SUBDOMAIN=""
     fi
 
-    oc delete route $NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" > /dev/null 2>&1
+    oc delete route $NAME_PREFIX$WORKSHOP_NAME-dummy -n "$NAMESPACE" > /dev/null 2>&1
 
     if [ "$?" != "0" ]; then
         warn "Cannot delete dummy route."
@@ -57,25 +57,25 @@ if [ x"$CLEAN_INSTALL" == x"true" ]; then
 
     PROJECT_RESOURCES="services,routes,deploymentconfigs,imagestreams,secrets,configmaps,serviceaccounts,rolebindings,serviceaccounts,rolebindings,persistentvolumeclaims,pods"
 
-    oc delete "$PROJECT_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABELS"
+    oc delete "$PROJECT_RESOURCES" -n "$NAMESPACE" --selector "$APPLICATION_LABELS"
 
     echo "### Delete global resources."
 
     CLUSTER_RESOURCES="clusterrolebindings,clusterroles"
 
-    oc delete "$CLUSTER_RESOURCES" -n "$PROJECT_NAME" --selector "$APPLICATION_LABELS"
+    oc delete "$CLUSTER_RESOURCES" -n "$NAMESPACE" --selector "$APPLICATION_LABELS"
 
     if [ x"$PREPULL_IMAGES" == x"true" ]; then
         echo "### Delete daemon set for pre-pulling images."
 
-        oc delete daemonset/$NAME_PREFIX$WORKSHOP_NAME-prepull -n "$PROJECT_NAME"
+        oc delete daemonset/$NAME_PREFIX$WORKSHOP_NAME-prepull -n "$NAMESPACE"
     fi
 fi
 
 if [ x"$PREPULL_IMAGES" == x"true" ]; then
     echo "### Deploy daemon set to pre-pull images."
 
-    cat << EOF | oc apply -n "$PROJECT_NAME" -f -
+    cat << EOF | oc apply -n "$NAMESPACE" -f -
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -138,8 +138,8 @@ fi
 echo "### Creating spawner application."
 
 if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
-    oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
-        --param PROJECT_NAME="$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" -f $TEMPLATE_PATH \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
@@ -164,12 +164,12 @@ if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
         --param LETS_ENCRYPT="$LETS_ENCRYPT" \
-        | oc apply -n "$PROJECT_NAME" -f -
+        | oc apply -n "$NAMESPACE" -f -
 fi
 
 if [ x"$SPAWNER_MODE" == x"user-workspace" ]; then
-    oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
-        --param PROJECT_NAME="$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" -f $TEMPLATE_PATH \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
@@ -190,12 +190,12 @@ if [ x"$SPAWNER_MODE" == x"user-workspace" ]; then
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
         --param LETS_ENCRYPT="$LETS_ENCRYPT" \
-        | oc apply -n "$PROJECT_NAME" -f -
+        | oc apply -n "$NAMESPACE" -f -
 fi
 
 if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
-    oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
-        --param PROJECT_NAME="$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" -f $TEMPLATE_PATH \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
@@ -215,12 +215,12 @@ if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
         --param LETS_ENCRYPT="$LETS_ENCRYPT" \
-        | oc apply -n "$PROJECT_NAME" -f -
+        | oc apply -n "$NAMESPACE" -f -
 fi
 
 if [ x"$SPAWNER_MODE" == x"terminal-server" ]; then
-    oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
-        --param PROJECT_NAME="$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" -f $TEMPLATE_PATH \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
@@ -240,12 +240,12 @@ if [ x"$SPAWNER_MODE" == x"terminal-server" ]; then
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
         --param LETS_ENCRYPT="$LETS_ENCRYPT" \
-        | oc apply -n "$PROJECT_NAME" -f -
+        | oc apply -n "$NAMESPACE" -f -
 fi
 
 if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
-    oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
-        --param PROJECT_NAME="$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" -f $TEMPLATE_PATH \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param SPAWNER_IMAGE="$SPAWNER_IMAGE" \
@@ -260,7 +260,7 @@ if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
         --param LETS_ENCRYPT="$LETS_ENCRYPT" \
-        | oc apply -n "$PROJECT_NAME" -f -
+        | oc apply -n "$NAMESPACE" -f -
 fi
 
 if [ "$?" != "0" ]; then
@@ -270,7 +270,7 @@ fi
 
 echo "### Waiting for the spawner to deploy."
 
-oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME"
+oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$NAMESPACE"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -293,9 +293,9 @@ if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
         -f $WORKSHOP_DIR/templates/spawner-resources.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param SPAWNER_MODE="$SPAWNER_MODE" | \
-        oc apply -n "$PROJECT_NAME" -f -
+        oc apply -n "$NAMESPACE" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update spawner resources definitions."
@@ -306,13 +306,13 @@ fi
 echo "### Update spawner configuration for workshop."
 
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
-    oc process -n "$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" \
         -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param SPAWNER_MODE="$SPAWNER_MODE" | \
-        oc apply -n "$PROJECT_NAME" -f -
+        oc apply -n "$NAMESPACE" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update session rules for workshop."
@@ -321,13 +321,13 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
 fi
 
 if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
-    oc process -n "$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" \
         -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param SPAWNER_MODE="$SPAWNER_MODE" | \
-        oc apply -n "$PROJECT_NAME" -f -
+        oc apply -n "$NAMESPACE" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update spawner rules for workshop."
@@ -336,13 +336,13 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
 fi
 
 if [ -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml ]; then
-    oc process -n "$PROJECT_NAME" \
+    oc process -n "$NAMESPACE" \
         -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param SPAWNER_MODE="$SPAWNER_MODE" | \
-        oc apply -n "$PROJECT_NAME" -f -
+        oc apply -n "$NAMESPACE" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update session resources for workshop."
@@ -353,13 +353,13 @@ else
     # deprecated. Use configmap-session-resources.yaml instead.
 
     if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
-        oc process -n "$PROJECT_NAME" \
+        oc process -n "$NAMESPACE" \
             -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
             --param NAME_PREFIX="$NAME_PREFIX" \
             --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-            --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+            --param SPAWNER_NAMESPACE="$NAMESPACE" \
             --param SPAWNER_MODE="$SPAWNER_MODE" | \
-            oc apply -n "$PROJECT_NAME" -f -
+            oc apply -n "$NAMESPACE" -f -
 
         if [ "$?" != "0" ]; then
             fail "Failed to update session resources for workshop."
@@ -370,7 +370,7 @@ fi
 
 echo "### Updating spawner to use image for workshop."
 
-oc tag "$WORKSHOP_IMAGE" "$NAME_PREFIX$WORKSHOP_NAME-session:latest" -n "$PROJECT_NAME"
+oc tag "$WORKSHOP_IMAGE" "$NAME_PREFIX$WORKSHOP_NAME-session:latest" -n "$NAMESPACE"
 
 if [ "$?" != "0" ]; then
     fail "Failed to update spawner to use workshop image."
@@ -379,7 +379,7 @@ fi
 
 echo "### Restart the spawner with new configuration."
 
-oc rollout latest "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME"
+oc rollout latest "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$NAMESPACE"
 
 if [ "$?" != "0" ]; then
     fail "Failed to restart the spawner."
@@ -388,7 +388,7 @@ fi
 
 echo "### Waiting for the spawner to deploy again."
 
-oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME"
+oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$NAMESPACE"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -397,5 +397,5 @@ fi
 
 echo "### Route details for the spawner are as follows."
 
-oc get route "$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME" \
+oc get route "$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$NAMESPACE" \
     -o template --template '{{.spec.host}}{{"\n"}}'
