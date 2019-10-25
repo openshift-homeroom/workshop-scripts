@@ -270,7 +270,7 @@ fi
 
 echo "### Waiting for the spawner to deploy."
 
-oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME"
+oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -374,7 +374,7 @@ fi
 
 echo "### Restart the spawner with new configuration."
 
-oc rollout latest "dc/$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME"
+oc rollout latest "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Failed to restart the spawner."
@@ -383,7 +383,7 @@ fi
 
 echo "### Waiting for the spawner to deploy again."
 
-oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME"
+oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
