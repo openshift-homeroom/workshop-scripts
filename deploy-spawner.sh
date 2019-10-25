@@ -143,7 +143,7 @@ if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --parem NAME_PREFIX="$NAME_PREFIX" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -172,7 +172,7 @@ if [ x"$SPAWNER_MODE" == x"user-workspace" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --parem NAME_PREFIX="$NAME_PREFIX" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -197,7 +197,7 @@ if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --parem NAME_PREFIX="$NAME_PREFIX" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -222,7 +222,7 @@ if [ x"$SPAWNER_MODE" == x"terminal-server" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --parem NAME_PREFIX="$NAME_PREFIX" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -247,7 +247,7 @@ if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --parem NAME_PREFIX="$NAME_PREFIX" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
         --param SPAWNER_IMAGE="$SPAWNER_IMAGE" \
         --param DOWNLOAD_URL="$DOWNLOAD_URL" \
         --param WORKSHOP_FILE="$WORKSHOP_FILE" \
