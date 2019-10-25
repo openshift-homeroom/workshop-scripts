@@ -96,8 +96,6 @@ echo "### Setting the workshop application."
 
 WORKSHOP_NAME=${WORKSHOP_NAME:-$REPOSITORY_NAME}
 
-DASHBOARD_APPLICATION=${DASHBOARD_APPLICATION:-$WORKSHOP_NAME}
-
 if [ x"$NAMESPACE" == x"" ]; then
     NAMESPACE=`oc project --short 2>/dev/null`
 fi

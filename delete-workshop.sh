@@ -6,4 +6,4 @@ SCRIPTS_DIR=`dirname $0`
 
 echo "### Delete build configuration."
 
-oc delete all --selector build="$WORKSHOP_NAME"
+oc delete all --selector build="$NAME_PREFIX$WORKSHOP_NAME"

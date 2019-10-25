@@ -8,7 +8,7 @@ SCRIPTS_DIR=`dirname $0`
 
 echo "### Delete project resources."
 
-APPLICATION_LABELS="app=$DASHBOARD_APPLICATION"
+APPLICATION_LABELS="app=$NAME_PREFIX$WORKSHOP_NAME"
 
 PROJECT_RESOURCES="all,serviceaccount,rolebinding,configmap"
 
