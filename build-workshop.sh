@@ -29,3 +29,11 @@ if [ "$?" != "0" ]; then
     fail "Failed to build workshop content."
     exit 1
 fi
+
+echo "### Updating tags for workshop images."
+
+oc get is "$NAME_PREFIX$WORKSHOP_NAME-session" -o name 2>/dev/null
+
+if [ "$?" != "0" ]; then
+    oc tag "$WORKSHOP_NAME:latest" "$NAME_PREFIX$WORKSHOP_NAME-session:latest"
+fi

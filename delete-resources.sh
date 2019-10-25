@@ -13,7 +13,8 @@ fi
 if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
     oc process \
         -f $WORKSHOP_DIR/templates/spawner-resources.yaml \
-        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
         oc delete -f -
 fi

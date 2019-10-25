@@ -14,27 +14,27 @@ echo "### Checking spawner configuration."
 
 if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
     if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
-        oc create route edge -n "$PROJECT_NAME" $WORKSHOP_NAME-dummy \
+        oc create route edge -n "$PROJECT_NAME" $NAME_PREFIX$WORKSHOP_NAME-dummy \
             --service dummy --port 8080 > /dev/null 2>&1
 
         if [ "$?" != "0" ]; then
-            fail "Cannot create dummy route $WORKSHOP_NAME-dummy."
+            fail "Cannot create dummy route $NAME_PREFIX$WORKSHOP_NAME-dummy."
         fi
 
-        DUMMY_FQDN=`oc get route/$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" -o template --template {{.spec.host}}`
+        DUMMY_FQDN=`oc get route/$NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" -o template --template {{.spec.host}}`
 
         if [ "$?" != "0" ]; then
             fail "Cannot determine host from dummy route."
         fi
 
-        DUMMY_HOST=$WORKSHOP_NAME-dummy-$PROJECT_NAME
+        DUMMY_HOST=$NAME_PREFIX$WORKSHOP_NAME-dummy-$PROJECT_NAME
         CLUSTER_SUBDOMAIN=`echo $DUMMY_FQDN | sed -e "s/^$DUMMY_HOST.//"`
 
         if [ x"$CLUSTER_SUBDOMAIN" == x"$DUMMY_FQDN" ]; then
             CLUSTER_SUBDOMAIN=""
         fi
 
-        oc delete route $WORKSHOP_NAME-dummy -n "$PROJECT_NAME" > /dev/null 2>&1
+        oc delete route $NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" > /dev/null 2>&1
 
         if [ "$?" != "0" ]; then
             warn "Cannot delete dummy route."
@@ -55,7 +55,7 @@ fi
 if [ x"$CLEAN_INSTALL" == x"true" ]; then
     echo "### Delete project resources."
 
-    APPLICATION_LABELS="app=$SPAWNER_APPLICATION-$PROJECT_NAME,spawner=$SPAWNER_MODE"
+    APPLICATION_LABELS="app=$NAME_PREFIX$WORKSHOP_NAME,spawner=$SPAWNER_MODE"
 
     PROJECT_RESOURCES="services,routes,deploymentconfigs,imagestreams,secrets,configmaps,serviceaccounts,rolebindings,serviceaccounts,rolebindings,persistentvolumeclaims,pods"
 
@@ -70,7 +70,7 @@ if [ x"$CLEAN_INSTALL" == x"true" ]; then
     if [ x"$PREPULL_IMAGES" == x"true" ]; then
         echo "### Delete daemon set for pre-pulling images."
 
-        oc delete daemonset/$WORKSHOP_NAME-prepull -n "$PROJECT_NAME"
+        oc delete daemonset/$NAME_PREFIX$WORKSHOP_NAME-prepull -n "$PROJECT_NAME"
     fi
 fi
 
@@ -81,15 +81,15 @@ if [ x"$PREPULL_IMAGES" == x"true" ]; then
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: $WORKSHOP_NAME-prepull
+  name: $NAME_PREFIX$WORKSHOP_NAME-prepull
 spec:
   selector:
     matchLabels:
-      app: $WORKSHOP_NAME-prepull
+      app: $NAME_PREFIX$WORKSHOP_NAME-prepull
   template:
     metadata:
       labels:
-        app: $WORKSHOP_NAME-prepull
+        app: $NAME_PREFIX$WORKSHOP_NAME-prepull
     spec:
       initContainers:
       - name: prepull-spawner 
@@ -142,7 +142,8 @@ echo "### Creating spawner application."
 if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
-        --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
+        --parem NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -170,7 +171,8 @@ fi
 if [ x"$SPAWNER_MODE" == x"user-workspace" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
-        --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
+        --parem NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -194,7 +196,8 @@ fi
 if [ x"$SPAWNER_MODE" == x"hosted-workshop" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
-        --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
+        --parem NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -218,7 +221,8 @@ fi
 if [ x"$SPAWNER_MODE" == x"terminal-server" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
-        --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
+        --parem NAME_PREFIX="$NAME_PREFIX" \
         --param HOMEROOM_NAME="$HOMEROOM_NAME" \
         --param HOMEROOM_LINK="$HOMEROOM_LINK" \
         --param WORKSHOP_TITLE="$WORKSHOP_TITLE" \
@@ -242,7 +246,8 @@ fi
 if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
     oc process -n "$PROJECT_NAME" -f $TEMPLATE_PATH \
         --param PROJECT_NAME="$PROJECT_NAME" \
-        --param APPLICATION_NAME="$SPAWNER_APPLICATION" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
+        --parem NAME_PREFIX="$NAME_PREFIX" \
         --param SPAWNER_IMAGE="$SPAWNER_IMAGE" \
         --param DOWNLOAD_URL="$DOWNLOAD_URL" \
         --param WORKSHOP_FILE="$WORKSHOP_FILE" \
@@ -264,7 +269,7 @@ fi
 
 echo "### Waiting for the spawner to deploy."
 
-oc rollout status dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
+oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -285,9 +290,10 @@ fi
 if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
     oc process \
         -f $WORKSHOP_DIR/templates/spawner-resources.yaml \
-        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
-        oc apply -f -
+        oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
         fail "Failed to update spawner resources definitions."
@@ -300,7 +306,8 @@ echo "### Update spawner configuration for workshop."
 if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
     oc process -n "$PROJECT_NAME" \
         -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
-        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
         oc apply -n "$PROJECT_NAME" -f -
 
@@ -313,7 +320,8 @@ fi
 if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
     oc process -n "$PROJECT_NAME" \
         -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
-        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
         oc apply -n "$PROJECT_NAME" -f -
 
@@ -326,7 +334,8 @@ fi
 if [ -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml ]; then
     oc process -n "$PROJECT_NAME" \
         -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml \
-        --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+        --param NAME_PREFIX="$NAME_PREFIX" \
+        --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
         oc apply -n "$PROJECT_NAME" -f -
 
@@ -341,7 +350,8 @@ else
     if [ -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml ]; then
         oc process -n "$PROJECT_NAME" \
             -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
-            --param SPAWNER_APPLICATION="$SPAWNER_APPLICATION" \
+            --param NAME_PREFIX="$NAME_PREFIX" \
+            --param WORKSHOP_NAME="$WORKSHOP_NAME" \
             --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
             oc apply -n "$PROJECT_NAME" -f -
 
@@ -354,7 +364,7 @@ fi
 
 echo "### Updating spawner to use image for workshop."
 
-oc tag "$WORKSHOP_IMAGE" "$SPAWNER_APPLICATION:latest" -n "$PROJECT_NAME"
+oc tag "$WORKSHOP_IMAGE" "$NAME_PREFIX$WORKSHOP_NAME:latest" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Failed to update spawner to use workshop image."
@@ -363,7 +373,7 @@ fi
 
 echo "### Restart the spawner with new configuration."
 
-oc rollout latest dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
+oc rollout latest "dc/$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Failed to restart the spawner."
@@ -372,7 +382,7 @@ fi
 
 echo "### Waiting for the spawner to deploy again."
 
-oc rollout status dc/"$SPAWNER_APPLICATION" -n "$PROJECT_NAME"
+oc rollout status "dc/$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Deployment of spawner failed to complete."
@@ -381,5 +391,5 @@ fi
 
 echo "### Route details for the spawner are as follows."
 
-oc get route "${SPAWNER_APPLICATION}" -n "$PROJECT_NAME" \
+oc get route "$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME" \
     -o template --template '{{.spec.host}}{{"\n"}}'

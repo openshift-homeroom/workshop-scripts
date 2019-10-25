@@ -3,6 +3,8 @@ DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:4.2.2
 SPAWNER_IMAGE=quay.io/openshifthomeroom/workshop-spawner:6.2.2
 CONSOLE_IMAGE=quay.io/openshift/origin-console:4.1
 
+NAME_PREFIX=
+
 HOMEROOM_NAME=homeroom
 WORKSHOP_TITLE=
 WORKSHOP_DESCRIPTION=
