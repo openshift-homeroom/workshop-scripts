@@ -12,43 +12,41 @@ TEMPLATE_PATH=$TEMPLATE_REPO/$SPAWNER_VERSION/templates/$TEMPLATE_FILE
 
 echo "### Checking spawner configuration."
 
-if [[ "$SPAWNER_MODE" =~ ^(hosted-workshop|terminal-server)$ ]]; then
-    if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
-        oc create route edge -n "$PROJECT_NAME" $NAME_PREFIX$WORKSHOP_NAME-dummy \
-            --service dummy --port 8080 > /dev/null 2>&1
+if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
+    oc create route edge -n "$PROJECT_NAME" $NAME_PREFIX$WORKSHOP_NAME-dummy \
+        --service dummy --port 8080 > /dev/null 2>&1
 
-        if [ "$?" != "0" ]; then
-            fail "Cannot create dummy route $NAME_PREFIX$WORKSHOP_NAME-dummy."
-        fi
-
-        DUMMY_FQDN=`oc get route/$NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" -o template --template {{.spec.host}}`
-
-        if [ "$?" != "0" ]; then
-            fail "Cannot determine host from dummy route."
-        fi
-
-        DUMMY_HOST=$NAME_PREFIX$WORKSHOP_NAME-dummy-$PROJECT_NAME
-        CLUSTER_SUBDOMAIN=`echo $DUMMY_FQDN | sed -e "s/^$DUMMY_HOST.//"`
-
-        if [ x"$CLUSTER_SUBDOMAIN" == x"$DUMMY_FQDN" ]; then
-            CLUSTER_SUBDOMAIN=""
-        fi
-
-        oc delete route $NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" > /dev/null 2>&1
-
-        if [ "$?" != "0" ]; then
-            warn "Cannot delete dummy route."
-        fi
+    if [ "$?" != "0" ]; then
+        fail "Cannot create dummy route $NAME_PREFIX$WORKSHOP_NAME-dummy."
     fi
 
+    DUMMY_FQDN=`oc get route/$NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" -o template --template {{.spec.host}}`
+
+    if [ "$?" != "0" ]; then
+        fail "Cannot determine host from dummy route."
+    fi
+
+    DUMMY_HOST=$NAME_PREFIX$WORKSHOP_NAME-dummy-$PROJECT_NAME
+    CLUSTER_SUBDOMAIN=`echo $DUMMY_FQDN | sed -e "s/^$DUMMY_HOST.//"`
+
+    if [ x"$CLUSTER_SUBDOMAIN" == x"$DUMMY_FQDN" ]; then
+        CLUSTER_SUBDOMAIN=""
+    fi
+
+    oc delete route $NAME_PREFIX$WORKSHOP_NAME-dummy -n "$PROJECT_NAME" > /dev/null 2>&1
+
+    if [ "$?" != "0" ]; then
+        warn "Cannot delete dummy route."
+    fi
+fi
+
+if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
+    read -p "CLUSTER_SUBDOMAIN: " CLUSTER_SUBDOMAIN
+
+    CLUSTER_SUBDOMAIN=$(trim $CLUSTER_SUBDOMAIN)
+
     if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
-        read -p "CLUSTER_SUBDOMAIN: " CLUSTER_SUBDOMAIN
-
-        CLUSTER_SUBDOMAIN=$(trim $CLUSTER_SUBDOMAIN)
-
-        if [ x"$CLUSTER_SUBDOMAIN" == x"" ]; then
-            fail "Must provide valid CLUSTER_SUBDOMAIN."
-        fi
+        fail "Must provide valid CLUSTER_SUBDOMAIN."
     fi
 fi
 
@@ -161,6 +159,7 @@ if [ x"$SPAWNER_MODE" == x"learning-portal" ]; then
         --param GATEWAY_ENVVARS="$GATEWAY_ENVVARS" \
         --param TERMINAL_ENVVARS="$TERMINAL_ENVVARS" \
         --param WORKSHOP_ENVVARS="$WORKSHOP_ENVVARS" \
+        --param CLUSTER_SUBDOMAIN="$CLUSTER_SUBDOMAIN" \
         --param IDLE_TIMEOUT="$IDLE_TIMEOUT" \
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
@@ -186,6 +185,7 @@ if [ x"$SPAWNER_MODE" == x"user-workspace" ]; then
         --param GATEWAY_ENVVARS="$GATEWAY_ENVVARS" \
         --param TERMINAL_ENVVARS="$TERMINAL_ENVVARS" \
         --param WORKSHOP_ENVVARS="$WORKSHOP_ENVVARS" \
+        --param CLUSTER_SUBDOMAIN="$CLUSTER_SUBDOMAIN" \
         --param IDLE_TIMEOUT="$IDLE_TIMEOUT" \
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
@@ -255,6 +255,7 @@ if [ x"$SPAWNER_MODE" == x"jumpbox-server" ]; then
         --param GATEWAY_ENVVARS="$GATEWAY_ENVVARS" \
         --param TERMINAL_ENVVARS="$TERMINAL_ENVVARS" \
         --param WORKSHOP_ENVVARS="$WORKSHOP_ENVVARS" \
+        --param CLUSTER_SUBDOMAIN="$CLUSTER_SUBDOMAIN" \
         --param IDLE_TIMEOUT="$IDLE_TIMEOUT" \
         --param JUPYTERHUB_CONFIG="$JUPYTERHUB_CONFIG" \
         --param JUPYTERHUB_ENVVARS="$JUPYTERHUB_ENVVARS" \
