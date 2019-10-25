@@ -365,7 +365,7 @@ fi
 
 echo "### Updating spawner to use image for workshop."
 
-oc tag "$WORKSHOP_IMAGE" "$NAME_PREFIX$WORKSHOP_NAME:latest" -n "$PROJECT_NAME"
+oc tag "$WORKSHOP_IMAGE" "$NAME_PREFIX$WORKSHOP_NAME-session:latest" -n "$PROJECT_NAME"
 
 if [ "$?" != "0" ]; then
     fail "Failed to update spawner to use workshop image."
@@ -392,5 +392,5 @@ fi
 
 echo "### Route details for the spawner are as follows."
 
-oc get route "$NAME_PREFIX$WORKSHOP_NAME" -n "$PROJECT_NAME" \
+oc get route "$NAME_PREFIX$WORKSHOP_NAME-spawner" -n "$PROJECT_NAME" \
     -o template --template '{{.spec.host}}{{"\n"}}'
