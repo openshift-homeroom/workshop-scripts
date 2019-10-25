@@ -293,7 +293,8 @@ if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
         -f $WORKSHOP_DIR/templates/spawner-resources.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_MODE="$SPAWNER_MODE" | \
         oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
@@ -309,7 +310,8 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml ]; then
         -f $WORKSHOP_DIR/templates/clusterroles-session-rules.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_MODE="$SPAWNER_MODE" | \
         oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
@@ -323,7 +325,8 @@ if [ -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml ]; then
         -f $WORKSHOP_DIR/templates/clusterroles-spawner-rules.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_MODE="$SPAWNER_MODE" | \
         oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
@@ -337,7 +340,8 @@ if [ -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml ]; then
         -f $WORKSHOP_DIR/templates/configmap-session-resources.yaml \
         --param NAME_PREFIX="$NAME_PREFIX" \
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-        --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+        --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+        --param SPAWNER_MODE="$SPAWNER_MODE" | \
         oc apply -n "$PROJECT_NAME" -f -
 
     if [ "$?" != "0" ]; then
@@ -353,7 +357,8 @@ else
             -f $WORKSHOP_DIR/templates/configmap-extra-resources.yaml \
             --param NAME_PREFIX="$NAME_PREFIX" \
             --param WORKSHOP_NAME="$WORKSHOP_NAME" \
-            --param SPAWNER_NAMESPACE="$PROJECT_NAME" | \
+            --param SPAWNER_NAMESPACE="$PROJECT_NAME" \
+            --param SPAWNER_MODE="$SPAWNER_MODE" | \
             oc apply -n "$PROJECT_NAME" -f -
 
         if [ "$?" != "0" ]; then
