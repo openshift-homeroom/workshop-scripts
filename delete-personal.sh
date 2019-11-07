@@ -18,4 +18,6 @@ echo "### Delete global resources."
 
 CLUSTER_RESOURCES="clusterrolebindings"
 
-oc delete "$CLUSTER_RESOURCES" -n "$NAMESPACE" --selector "$APPLICATION_LABELS"
+if [ x"$DASHBOARD_MODE" == x"cluster-admin" ]; then
+    oc delete "$CLUSTER_RESOURCES" -n "$NAMESPACE" --selector "$APPLICATION_LABELS"
+fi
