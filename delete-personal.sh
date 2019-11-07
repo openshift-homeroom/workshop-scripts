@@ -13,3 +13,9 @@ APPLICATION_LABELS="app=$NAME_PREFIX$WORKSHOP_NAME"
 PROJECT_RESOURCES="all,serviceaccount,rolebinding,configmap"
 
 oc delete "$PROJECT_RESOURCES" -n "$NAMESPACE" --selector "$APPLICATION_LABELS"
+
+echo "### Delete global resources."
+
+CLUSTER_RESOURCES="clusterrolebindings"
+
+oc delete "$CLUSTER_RESOURCES" -n "$NAMESPACE" --selector "$APPLICATION_LABELS"
