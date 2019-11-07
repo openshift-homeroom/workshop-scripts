@@ -13,6 +13,8 @@ echo "### Deploying workshop using Homeroom."
 SERVER_ADDRESS=`oc get --raw /.well-known/oauth-authorization-server | grep '"issuer":' | sed -e 's%.*https://%%' -e 's%",%%'`
 CLUSTER_SUBDOMAIN=`echo $SERVER_ADDRESS | sed -e 's/-443-/-80-/' -e 's/:.*//' -e 's/oauth-openshift-//'`
 
+oc login -u admin -p admin > /dev/null
+
 oc new-project workshop > /dev/null
 
 cat >> $WORKSHOP_DIR/katacoda-settings.sh << EOF
