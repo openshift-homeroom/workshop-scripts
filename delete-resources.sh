@@ -17,5 +17,5 @@ if [ -f $WORKSHOP_DIR/templates/spawner-resources.yaml ]; then
         --param WORKSHOP_NAME="$WORKSHOP_NAME" \
         --param SPAWNER_NAMESPACE="$NAMESPACE" \
         --param SPAWNER_MODE="$SPAWNER_MODE" | \
-        oc delete -f -
+        oc delete -n "$NAMESPACE" -f -
 fi
