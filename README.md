@@ -9,7 +9,7 @@ Adding the Sub Module
 To add this Git repository as a Git submodule to an existing Git repository for a workshop, run:
 
 ```
-git submodule add -b stable/1.x https://github.com/openshift-homeroom/spawner-scripts.git .workshop/scripts
+git submodule add -b stable/2.x https://github.com/openshift-homeroom/spawner-scripts.git .workshop/scripts
 ```
 
 Once added as a Git submodule, to pull the source code for it, run:

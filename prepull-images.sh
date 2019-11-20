@@ -8,19 +8,19 @@ SCRIPTS_DIR=`dirname $0`
 
 echo "### Deploy daemon set to pre-pull images."
 
-cat << EOF | oc apply -n "$PROJECT_NAME" -f -
+cat << EOF | oc apply -n "$NAMESPACE" -f -
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: $WORKSHOP_NAME-prepull
+  name: $NAME_PREFIX$WORKSHOP_NAME-prepull
 spec:
   selector:
     matchLabels:
-      app: $WORKSHOP_NAME-prepull
+      app: $NAME_PREFIX$WORKSHOP_NAME-prepull
   template:
     metadata:
       labels:
-        app: $WORKSHOP_NAME-prepull
+        app: $NAME_PREFIX$WORKSHOP_NAME-prepull
     spec:
       initContainers:
       - name: prepull-spawner 
