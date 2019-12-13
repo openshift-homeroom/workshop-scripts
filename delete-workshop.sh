@@ -2,6 +2,8 @@
 
 SCRIPTS_DIR=`dirname $0`
 
+. $SCRIPTS_DIR/parse-arguments.sh
+
 . $SCRIPTS_DIR/setup-environment.sh
 
 echo "### Delete build configuration."
