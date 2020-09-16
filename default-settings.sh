@@ -1,7 +1,7 @@
-TERMINAL_IMAGE=quay.io/openshifthomeroom/workshop-terminal:3.4.2
-DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:5.0.0
-SPAWNER_IMAGE=quay.io/openshifthomeroom/workshop-spawner:7.1.0
-CONSOLE_IMAGE=quay.io/openshift/origin-console:4.2
+TERMINAL_IMAGE=quay.io/openshifthomeroom/workshop-terminal:3.4.3
+DASHBOARD_IMAGE=quay.io/openshifthomeroom/workshop-dashboard:5.0.1
+SPAWNER_IMAGE=quay.io/openshifthomeroom/workshop-spawner:7.2.2
+CONSOLE_IMAGE=quay.io/openshift/origin-console:4.5
 
 NAME_PREFIX=
 
@@ -10,14 +10,14 @@ WORKSHOP_TITLE=
 WORKSHOP_DESCRIPTION=
 
 SPAWNER_REPO=openshift-homeroom/workshop-spawner
-SPAWNER_VERSION=7.1.0
+SPAWNER_VERSION=7.2.2
 SPAWNER_MODE=learning-portal
 SPAWNER_VARIANT=production
 SPAWNER_ROLE=admin
 SPAWNER_PASSWORD=
 
 DASHBOARD_REPO=openshift-homeroom/workshop-dashboard
-DASHBOARD_VERSION=5.0.0
+DASHBOARD_VERSION=5.0.1
 DASHBOARD_MODE=
 DASHBOARD_VARIANT=production
 
